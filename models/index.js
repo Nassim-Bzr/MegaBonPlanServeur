@@ -1,35 +1,29 @@
-// models/index.js
-const { Sequelize } = require("sequelize");
-require('dotenv').config();
+const Sequelize = require('sequelize');
+const config = require('../config/db.config.js'); // Assurez-vous que le chemin d'accès est correct
 
-// Configuration de la connexion à la base de données
-const config = require("../config/db.config.js");
-const sequelize = new Sequelize(
-  config.DB,
-  config.USER,
-  config.PASSWORD,
-  {
-    host: config.HOST,
-    dialect: config.dialect,
-    pool: {
-      max: config.pool.max,
-      min: config.pool.min,
-      acquire: config.pool.acquire,
-      idle: config.pool.idle
-    }
+const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
+  host: config.HOST,
+  dialect: config.dialect,
+  operatorsAliases: false,
+
+  pool: {
+    max: config.pool.max,
+    min: config.pool.min,
+    acquire: config.pool.acquire,
+    idle: config.pool.idle
   }
-);
+});
 
 const db = {};
 
-db.sequelize = sequelize; // Votre instance Sequelize
 db.Sequelize = Sequelize;
+db.sequelize = sequelize;
 
 db.utilisateurs = require("./utilisateur.model.js")(sequelize, Sequelize);
 db.categories = require("./categorie.model.js")(sequelize, Sequelize);
 db.bonplans = require("./bonplan.model.js")(sequelize, Sequelize);
 db.commentaires = require("./commentaire.model.js")(sequelize, Sequelize);
-db.favoris = require("./favori.model.js")(sequelize, Sequelize);
+db.favoris = require("./favori.models.js")(sequelize, Sequelize);
 db.codepromos = require("./codepromo.model.js")(sequelize, Sequelize);
 db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 

@@ -1,13 +1,22 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const pool = require("./config/db.config.js"); // Assurez-vous que le chemin est correct
 
 const app = express();
+app.use(express.json());
 
+// Remplacez ces lignes si vous utilisez Sequelize et non directement pool
+// const pool = require("./config/db.config.js"); 
 var corsOptions = {
-  origin: "*"
+  origin: "*" // Autoriser toutes les origines
 };
+
+// Activation du middleware CORS avec les options configurées
+app.use(cors(corsOptions));
+// Importez vos routeurs
+require('./routes/category.routes')(app);
+// Répétez pour d'autres entités en important leurs routeurs correspondants
+
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
@@ -17,92 +26,17 @@ app.get("/", (req, res) => {
   res.json({ message: "Bonsoir grosse salope." });
 });
 
-app.get("/utilisateurs", async (req, res) => {
-  try {
-      const { rows } = await pool.query('SELECT * FROM Utilisateur');
-      res.json(rows);
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Erreur du serveur lors de la récupération des utilisateurs.");
-  }
-});
-// Route pour récupérer toutes les catégories
-app.get("/categories", async (req, res) => {
-  try {
-      const { rows } = await pool.query('SELECT * FROM Categorie');
-      res.json(rows);
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Erreur du serveur lors de la récupération des catégories.");
-  }
-});
+// Utilisez vos routes importées ici. Supprimez les anciennes routes directes de pool.query.
+// Exemple pour les utilisateurs:
+// const userRoutes = require('./routes/user.routes');
+// app.use('/api/utilisateurs', userRoutes);
 
-// Route pour récupérer tous les bons plans
-app.get("/bonsplans", async (req, res) => {
-  try {
-      const { rows } = await pool.query('SELECT * FROM BonPlan');
-      res.json(rows);
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Erreur du serveur lors de la récupération des bons plans.");
-  }
-});
+// Vous pouvez également configurer le routeur directement ici, mais il est préférable de séparer en fichiers
+// Exemple pour catégories:
+// const categoryController = require('./controllers/category.controller');
+// app.get("/api/categories", categoryController.findAll);
 
-// Route pour récupérer tous les commentaires
-app.get("/commentaires", async (req, res) => {
-  try {
-      const { rows } = await pool.query('SELECT * FROM Commentaire');
-      res.json(rows);
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Erreur du serveur lors de la récupération des commentaires.");
-  }
-});
-
-// Route pour récupérer tous les favoris
-app.get("/favoris", async (req, res) => {
-  try {
-      const { rows } = await pool.query('SELECT * FROM Favori');
-      res.json(rows);
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Erreur du serveur lors de la récupération des favoris.");
-  }
-});
-
-// Route pour récupérer tous les codes promo
-app.get("/codespromo", async (req, res) => {
-  try {
-      const { rows } = await pool.query('SELECT * FROM CodePromo');
-      res.json(rows);
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Erreur du serveur lors de la récupération des codes promo.");
-  }
-});
-
-// Route pour récupérer toutes les discussions
-app.get("/discussions", async (req, res) => {
-  try {
-      const { rows } = await pool.query('SELECT * FROM Discussion');
-      res.json(rows);
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Erreur du serveur lors de la récupération des discussions.");
-  }
-});
-
-// Route pour récupérer tous les messages
-app.get("/messages", async (req, res) => {
-  try {
-      const { rows } = await pool.query('SELECT * FROM Message');
-      res.json(rows);
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Erreur du serveur lors de la récupération des messages.");
-  }
-});
-
+// Supprimez toutes les autres routes qui utilisent pool.query et remplacez-les par les routes utilisant Sequelize
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
