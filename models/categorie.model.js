@@ -10,6 +10,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       field: 'nomcategorie', // Assurez-vous que le nom de champ correspond à la base de données
       allowNull: false // Assurez-vous que ce champ ne peut pas être null
+    },
+    imglink: {
+      type: DataTypes.STRING,
+      field: 'imglink', // Assurez-vous que le nom de champ correspond à la base de données
+      allowNull: false // Assurez-vous que ce champ ne peut pas être null
     }
   }, {
     tableName: 'categorie', // Utilisez le nom exact de votre table ici

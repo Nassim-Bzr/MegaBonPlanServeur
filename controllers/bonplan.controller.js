@@ -98,3 +98,20 @@ exports.delete = async (req, res) => {
     });
   }
 };
+
+
+// Supprimer tout les bon plans
+
+exports.deleteAll = async (req, res) => {
+  try {
+    const data = await BonPlan.destroy({
+      where: {},
+      truncate: false
+    });
+    res.send({ message: `${data} bon plans ont été supprimés avec succès !` });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Une erreur est survenue lors de la suppression des bon plans."
+    });
+  }
+}

@@ -24,7 +24,7 @@ db.categories = require("./categorie.model.js")(sequelize, Sequelize);
 db.bonplans = require("./bonplan.model.js")(sequelize, Sequelize);
 db.commentaires = require("./commentaire.model.js")(sequelize, Sequelize);
 db.favoris = require("./favori.models.js")(sequelize, Sequelize);
-db.codepromos = require("./codepromo.model.js")(sequelize, Sequelize);
+db.codepromos = require("./codePromo.model.js")(sequelize, Sequelize);
 db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 
 // Associations
@@ -32,8 +32,9 @@ db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 db.bonplans.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur' });
 db.utilisateurs.hasMany(db.bonplans, { foreignKey: 'id_utilisateur' });
 
-db.utilisateurs.hasMany(db.commentaires);
-db.commentaires.belongsTo(db.utilisateurs);
+db.commentaires.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur' });
+db.utilisateurs.hasMany(db.commentaires, { foreignKey: 'id_utilisateur' });
+
 
 // Lors de la définition de l'association entre BonPlan et Categorie
 db.bonplans.belongsTo(db.categories, { foreignKey: 'ID_Categorie' }); // Assurez-vous que 'ID_Categorie' correspond au nom de la clé étrangère dans votre table BonPlan
@@ -43,8 +44,12 @@ db.categories.hasMany(db.bonplans, { foreignKey: 'ID_Categorie' });
 db.utilisateurs.belongsToMany(db.bonplans, { through: db.favoris });
 db.bonplans.belongsToMany(db.utilisateurs, { through: db.favoris });
 
-db.utilisateurs.hasMany(db.codepromos);
-db.codepromos.belongsTo(db.utilisateurs);
+// Dans votre fichier index.js où vous définissez les associations
+// Dans votre fichier d'initialisation des modèles ou là où vous définissez les associations
+db.codepromos.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'Utilisateur' });
+db.utilisateurs.hasMany(db.codepromos, { foreignKey: 'id_utilisateur', as: 'CodePromos' });
+
+
 
 
 

@@ -12,7 +12,7 @@ module.exports = app => {
     // Récupérer toutes les catégories
     router.get("/", bonplans.findAll);
   
-  /*   // Récupérer une catégorie par son ID
+
     router.get("/:id", bonplans.findOne);
   
     // Mettre à jour une catégorie par son ID
@@ -20,9 +20,13 @@ module.exports = app => {
   
     // Supprimer une catégorie par son ID
     router.delete("/:id", bonplans.delete); // Appliquez authenticateUser si nécessaire
+
+    // Supprimer tout les bonplans
+
+    router.delete("/", bonplans.deleteAll);
   
     // Supprimer toutes les catégories
-    router.delete("/", bonplans.deleteAll); // Appliquez authenticateUser si nécessaire */
+    
   
     app.use('/api/bonplans', router);
   };

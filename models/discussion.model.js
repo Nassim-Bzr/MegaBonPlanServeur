@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
     Titre: {
       type: DataTypes.STRING,
     },
+    Contenu:{
+      type: DataTypes.STRING,
+    },
     DateCreation: {
       type: DataTypes.DATE,
     },

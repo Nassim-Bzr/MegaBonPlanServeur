@@ -12,8 +12,8 @@ module.exports = app => {
     // Récupérer toutes les catégories
     router.get("/", categories.findAll);
   
-  /*   // Récupérer une catégorie par son ID
-    router.get("/:id", categories.findOne);
+    // Récupérer une catégorie par son ID
+
   
     // Mettre à jour une catégorie par son ID
     router.put("/:id", categories.update); // Appliquez authenticateUser si nécessaire
@@ -22,7 +22,7 @@ module.exports = app => {
     router.delete("/:id", categories.delete); // Appliquez authenticateUser si nécessaire
   
     // Supprimer toutes les catégories
-    router.delete("/", categories.deleteAll); // Appliquez authenticateUser si nécessaire */
+    router.delete("/", categories.deleteAll); // Appliquez authenticateUser si nécessaire
   
     app.use('/api/categories', router);
   };

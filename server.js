@@ -16,6 +16,11 @@ app.use(cors(corsOptions));
 // Importez vos routeurs
 require('./routes/category.routes')(app);
 require('./routes/bonplan.routes')(app);
+require('./routes/commentary.routes')(app);
+
+require('./routes/codepromos.routes')(app);
+
+
 // Répétez pour d'autres entités en important leurs routeurs correspondants
 
 
