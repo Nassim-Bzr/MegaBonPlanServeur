@@ -18,6 +18,10 @@ const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+sequelize.authenticate()
+  .then(() => console.log('Connexion à la base de données établie avec succès.'))
+  .catch(err => console.error('Impossible de se connecter à la base de données:', err));
+
 
 db.utilisateurs = require("./utilisateur.model.js")(sequelize, Sequelize);
 db.categories = require("./categorie.model.js")(sequelize, Sequelize);

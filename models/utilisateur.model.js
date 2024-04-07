@@ -1,31 +1,21 @@
-// utilisateur.model.js
-
 module.exports = (sequelize, DataTypes) => {
-  const Utilisateur = sequelize.define("Utilisateur", {
-    ID_Utilisateur: {
+  const Utilisateur = sequelize.define('Utilisateur', {
+    id_utilisateur: {
       type: DataTypes.INTEGER,
-      references: {
-        model: 'NomDuModèleUtilisateur', // Assurez-vous que cela correspond au nom du modèle Sequelize pour la table utilisateur
-        key: 'id_utilisateur', // Utilisez le nom exact de la colonne tel qu'il apparaît dans la base de données
-      },
-      field: 'id_utilisateur' // Assurez-vous que cela correspond exactement au nom de la colonne dans la base de données
-    }
-,    
-    Nom: {
-      type: DataTypes.STRING
+      primaryKey: true,
+      autoIncrement: true
     },
-    Email: {
-      type: DataTypes.STRING
+    nom: DataTypes.STRING,
+    email: DataTypes.STRING,
+    motdepasse: DataTypes.STRING,
+    dateinscription: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW // Définit la date et l'heure actuelles comme valeur par défaut
     },
-    MotDePasse: {
-      type: DataTypes.STRING
-    },
-    DateInscription: {
-      type: DataTypes.DATE
-    },
-    isAdmin: {
-      type: DataTypes.BOOLEAN
-    }
+    isadmin: DataTypes.BOOLEAN
+  }, {
+    tableName: 'utilisateur',
+    timestamps: false
   });
 
   return Utilisateur;
