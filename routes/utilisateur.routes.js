@@ -1,3 +1,4 @@
+
 // utilisateurs routes
 
 module.exports = app => {
@@ -5,23 +6,19 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-/*   // Créer un nouvel utilisateur
-  router.post("/", utilisateurs.create); */
+  // Créer un nouvel utilisateur
+
 
   // Récupérer tous les utilisateurs
+  router.post('/', utilisateurs.create);
+router.get('/', utilisateurs.findAll);
+router.get('/:id', utilisateurs.findOne);
+router.put('/:id', utilisateurs.update);
+router.delete('/:id', utilisateurs.delete);
   router.get("/", utilisateurs.findAll);
 
   // Récupérer un utilisateur par son ID
-/*   router.get("/:id", utilisateurs.findOne); */
+ 
 
-  // Mettre à jour un utilisateur par son ID
-/*   router.put("/:id", utilisateurs.update); */
-
-/*   // Supprimer un utilisateur par son ID
-  router.delete("/:id", utilisateurs.delete); */
-
-/*   // Supprimer tous les utilisateurs
-  router.delete("/", utilisateurs.deleteAll);  */
-
-  app.use('/utilisateurs', router);
+  app.use('/api/utilisateur', router);
 }

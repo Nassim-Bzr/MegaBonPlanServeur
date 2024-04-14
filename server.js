@@ -4,7 +4,15 @@ const session = require("express-session");
 const cors = require("cors");
 require("./auth");
 const app = express();
-app.use(session({ secret: "cats" }));
+
+
+app.use(session({
+  secret: 'votre secret',
+  resave: false,
+  saveUninitialized: true,  // Définissez explicitement cette option selon vos besoins
+  cookie: { secure: true }
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
@@ -24,6 +32,7 @@ require("./routes/commentary.routes")(app);
 require("./routes/codepromos.routes")(app);
 require("./routes/discussions.routes")(app);
 require("./routes/utilisateur.routes")(app);
+require("./routes/auth.routes")(app);
 
 // Répétez pour d'autres entités en important leurs routeurs correspondants
 
@@ -40,8 +49,14 @@ app.get("/", (req, res) => {
 });
 
 app.get('/protected', isLoggedIn, (req, res) => {
-  res.send(`Hello ${req.user.displayName}`);
+  // Supposons que "http://localhost:3000" soit l'URL de base de votre front-end
+  // Vous pouvez également utiliser process.env.CLIENT_URL pour cela
+  const baseUrl = process.env.CLIENT_URL || "http://localhost:3000";
+  
+  // Redirigez vers le front-end avec des informations sur l'utilisateur
+  res.redirect(`${baseUrl}/login-success?name=${req.user.displayName}`);
 });
+
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["email", "profile"] })
