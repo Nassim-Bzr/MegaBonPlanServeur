@@ -119,3 +119,25 @@ exports.deleteAll = async (req, res) => {
     });
   }
 }
+
+// Récupérer une catégorie par son ID
+exports.findOne = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const category = await Category.findByPk(id);
+
+    if (!category) {
+      return res.status(404).send({
+        message: `La catégorie avec l'ID ${id} n'a pas été trouvée.`
+      });
+    }
+
+    res.send(category);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Une erreur est survenue lors de la récupération de la catégorie."
+    });
+  }
+}
+

@@ -32,7 +32,7 @@ require("./routes/commentary.routes")(app);
 require("./routes/codepromos.routes")(app);
 require("./routes/discussions.routes")(app);
 require("./routes/utilisateur.routes")(app);
-require("./routes/auth.routes")(app);
+
 
 // Répétez pour d'autres entités en important leurs routeurs correspondants
 
