@@ -27,8 +27,8 @@ db.utilisateurs = require("./utilisateur.model.js")(sequelize, Sequelize);
 db.categories = require("./categorie.model.js")(sequelize, Sequelize);
 db.bonplans = require("./bonplan.model.js")(sequelize, Sequelize);
 db.commentaires = require("./commentaire.model.js")(sequelize, Sequelize);
-db.favoris = require("./favori.models.js")(sequelize, Sequelize);
-db.codepromos = require("./codePromo.model.js")(sequelize, Sequelize);
+
+db.codepromos = require("./CodePromo.model.js")(sequelize, Sequelize);
 db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 
 // Associations
