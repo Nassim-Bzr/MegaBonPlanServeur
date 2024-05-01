@@ -1,11 +1,14 @@
 const db = require("../models");
+const bcrypt = require('bcrypt');
 const Utilisateur = db.utilisateurs;
+require('dotenv').config();
+
 
 // Créer un utilisateur
 exports.create = async (req, res) => {
     try {
         // Valider la requête
-        if (!req.body.nom) {
+        if (!req.body.email) {
             return res
                 .status(400)
                 .send({ message: "Le contenu ne peut pas être vide !" });
@@ -13,8 +16,8 @@ exports.create = async (req, res) => {
 
         // Créer un nouvel utilisateur
         const utilisateur = {
+
             nom: req.body.nom,
-            prenom: req.body.prenom,
             email: req.body.email,
             motdepasse: req.body.motdepasse,
             isadmin: req.body.isadmin,
@@ -132,3 +135,49 @@ exports.deleteAll = async (req, res) => {
         });
     }
 }
+// Connexion d'un utilisateur
+const jwt = require('jsonwebtoken');
+
+exports.login = async (req, res) => {
+    const { email, motdepasse } = req.body;
+
+    try {
+        const utilisateur = await Utilisateur.findOne({ where: { email } });
+
+        if (!utilisateur) {
+            return res.status(404).send({ message: "Utilisateur non trouvé." });
+        }
+
+        const isMatch = await bcrypt.compare(motdepasse, utilisateur.motdepasse);
+        if (!isMatch) {
+            return res.status(401).send({ message: "Mot de passe incorrect !" });
+        }
+
+        const payload = {
+            user: {
+                id: utilisateur.id,
+                email: utilisateur.email,
+                isadmin: utilisateur.isadmin,
+                nom: utilisateur.nom,
+                token: utilisateur,
+            }
+        };
+
+        // Expire dans 1 heure
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET, // Assurez-vous de définir cette variable d'environnement
+            { expiresIn: 3600 },
+            (err, token) => {
+                if (err) throw err;
+                res.json({
+                    user: payload.user, // Inclure les données de l'utilisateur dans la réponse
+                    token: token
+                });
+            }
+        );
+    } catch (err) {
+        res.status(500).send({ message: err.message || "Une erreur est survenue lors de la tentative de connexion." });
+    }
+};
+

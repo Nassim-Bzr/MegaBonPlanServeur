@@ -1,4 +1,4 @@
-
+const auth = require('../middleware/auth.middleware');
 // utilisateurs routes
 
 module.exports = app => {
@@ -16,6 +16,9 @@ router.get('/:id', utilisateurs.findOne);
 router.put('/:id', utilisateurs.update);
 router.delete('/:id', utilisateurs.delete);
   router.get("/", utilisateurs.findAll);
+// Route de connexion
+router.post('/login', utilisateurs.login);
+
 
   // Récupérer un utilisateur par son ID
  

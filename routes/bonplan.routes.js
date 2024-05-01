@@ -25,7 +25,10 @@ module.exports = app => {
 
     router.delete("/", bonplans.deleteAll);
   
-    // Supprimer toutes les catégories
+
+    // Récupérer tous les bons plans pour une catégorie spécifique
+router.get("/category/:idCategorie", bonplans.findByCategory);
+
     
   
     app.use('/api/bonplans', router);

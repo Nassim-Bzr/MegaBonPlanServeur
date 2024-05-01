@@ -12,6 +12,7 @@ exports.create = async (req, res) => {
     Titre: req.body.Titre,
     Description: req.body.Description,
     LienAffiliation: req.body.LienAffiliation,
+    ID_Categorie: req.body.ID_Categorie,
     DatePost: req.body.DatePost || new Date(),
     ApprouveParAdmin: req.body.ApprouveParAdmin || false,
   };
@@ -115,3 +116,24 @@ exports.deleteAll = async (req, res) => {
     });
   }
 }
+
+// Récupérer tous les BonPlans pour une catégorie spécifique
+exports.findByCategory = async (req, res) => {
+  const idCategorie = req.params.idCategorie;
+  try {
+    const data = await BonPlan.findAll({
+      where: { ID_Categorie: idCategorie }
+    });
+    if (data.length > 0) {
+      res.send(data);
+    } else {
+      res.status(404).send({
+        message: `Aucun bon plan trouvé pour la catégorie ID ${idCategorie}.`
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: `Erreur lors de la récupération des bons plans pour la catégorie ID ${idCategorie}: ${err.message}`
+    });
+  }
+};
