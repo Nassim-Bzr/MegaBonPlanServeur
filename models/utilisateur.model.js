@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     isadmin: DataTypes.BOOLEAN,
     verificationcode: DataTypes.STRING,
-    verificationcodeexpires: DataTypes.DATE
+    verificationcodeexpires: DataTypes.DATE,
+    isverified: { // Nouveau champ
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     tableName: 'utilisateur',
     timestamps: false

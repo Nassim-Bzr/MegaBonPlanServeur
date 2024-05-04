@@ -19,6 +19,7 @@ router.delete('/:id', utilisateurs.delete);
 // Route de connexion
 router.delete("/", utilisateurs.deleteAll);
 router.post('/login', utilisateurs.login);
+router.post('/verify', utilisateurs.verifyUser)
 
 
   // Récupérer un utilisateur par son ID
