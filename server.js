@@ -4,6 +4,8 @@ const session = require("express-session");
 const cors = require("cors");
 require("./auth");
 const app = express();
+require('dotenv').config();
+
 
 
 app.use(session({

@@ -1,40 +1,67 @@
+const nodemailer = require("nodemailer");
 const db = require("../models");
 const bcrypt = require('bcrypt');
-const Utilisateur = db.utilisateurs;
+const crypto = require('crypto');
 require('dotenv').config();
 
+const Utilisateur = db.utilisateurs;
+
+// Fonction pour générer un code de vérification
+const generateVerificationCode = () => {
+  return crypto.randomBytes(3).toString('hex'); // Génère un code hexadécimal
+};
+
+// Configuration du transporter pour NodeMailer
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_APP_PASSWORD
+  }
+});
+
+// Fonction pour envoyer l'email de vérification
+const sendVerificationEmail = async (email, code) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USERNAME,
+    to: email,
+    subject: "Verification de votre compte",
+    html: `<h1>Code de Vérification</h1><p>Votre code de vérification est: ${code}</p>`
+  };
+
+  try {
+    let info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info.messageId);
+  } catch (error) {
+    console.error('Failed to send email:', error);
+  }
+};
 
 // Créer un utilisateur
 exports.create = async (req, res) => {
-    try {
-        // Valider la requête
-        if (!req.body.email) {
-            return res
-                .status(400)
-                .send({ message: "Le contenu ne peut pas être vide !" });
-        }
+  try {
+    const code = generateVerificationCode();
+    const utilisateur = {
+      nom: req.body.nom,
+      email: req.body.email,
+      motdepasse: await bcrypt.hash(req.body.motdepasse, 10),
+      isadmin: req.body.isadmin || false,
+      verificationcode: code,
+      verificationcodeexpires: new Date(Date.now() + 3600000)
+    };
 
-        // Créer un nouvel utilisateur
-        const utilisateur = {
-
-            nom: req.body.nom,
-            email: req.body.email,
-            motdepasse: req.body.motdepasse,
-            isadmin: req.body.isadmin,
-        };
-
-        // Sauvegarder l'utilisateur dans la base de données
-        const data = await Utilisateur.create(utilisateur);
-        res.send(data);
-    } catch (err) {
-        res.status(500).send({
-            message:
-                err.message ||
-                "Une erreur est survenue lors de la création de l'utilisateur.",
-        });
-    }
+    const data = await Utilisateur.create(utilisateur);
+    await sendVerificationEmail(req.body.email, code);
+    res.status(201).send(data);
+  } catch (err) {
+    console.error("Error during user creation:", err);
+    res.status(500).send({
+      message: err.message || "Une erreur est survenue lors de la création de l'utilisateur."
+    });
+  }
 };
-
 // Récupérer tous les utilisateurs
 exports.findAll = async (req, res) => {
     try {
@@ -71,11 +98,11 @@ exports.findOne = async (req, res) => {
 
 // Mettre à jour un utilisateur par son ID
 exports.update = async (req, res) => {
-    const id = req.params.id;
+    const id = req.params.id;  // Assure-toi que le paramètre dans la route est correctement nommé
 
     try {
         const [updatedRows] = await Utilisateur.update(req.body, {
-            where: { id: id },
+            where: { id_utilisateur: id },
         });
 
         if (updatedRows === 1) {
@@ -85,12 +112,12 @@ exports.update = async (req, res) => {
         }
     } catch (err) {
         res.status(500).send({
-            message:
-                err.message ||
-                "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
+            message: err.message || "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
         });
     }
 };
+
+
 
 // Supprimer un utilisateur par son ID
 exports.delete = async (req, res) => {

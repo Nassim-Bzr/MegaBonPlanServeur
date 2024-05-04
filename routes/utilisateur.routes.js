@@ -17,6 +17,7 @@ router.put('/:id', utilisateurs.update);
 router.delete('/:id', utilisateurs.delete);
   router.get("/", utilisateurs.findAll);
 // Route de connexion
+router.delete("/", utilisateurs.deleteAll);
 router.post('/login', utilisateurs.login);
 
 
