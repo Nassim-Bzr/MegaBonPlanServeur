@@ -137,3 +137,39 @@ exports.findByCategory = async (req, res) => {
     });
   }
 };
+
+// Récupérer tous les BonPlans non approuvés
+// controllers/bonplan.controller.js
+exports.findPending = async (req, res) => {
+  try {
+    const pendingBonPlans = await BonPlan.findAll({
+      where: { ApprouveParAdmin: false }
+    });
+    res.send(pendingBonPlans);
+  } catch (err) {
+    res.status(500).send({
+      message: "Une erreur est survenue lors de la récupération des bons plans en attente: " + err.message
+    });
+  }
+};
+
+// Basculer l'approbation d'un bon plan
+exports.toggleApproval = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const bonPlan = await BonPlan.findByPk(id);
+    if (!bonPlan) {
+      return res.status(404).send({ message: `BonPlan avec l'ID ${id} non trouvé.` });
+    }
+
+    const updated = await bonPlan.update({
+      ApprouveParAdmin: !bonPlan.ApprouveParAdmin
+    });
+
+    res.send({ message: "L'état d'approbation du bon plan a été modifié.", bonPlan: updated });
+  } catch (err) {
+    res.status(500).send({
+      message: `Erreur lors de la modification de l'état d'approbation du bon plan avec l'ID ${id}: ${err.message}`
+    });
+  }
+};
