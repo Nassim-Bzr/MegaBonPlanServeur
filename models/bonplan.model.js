@@ -38,6 +38,12 @@ module.exports = (sequelize, DataTypes) => {
         field: 'id_categorie' // le nom exact de la colonne dans la table BonPlan
       },
       
+      imglink: {
+        type: DataTypes.STRING,
+        field: 'imglink', // Assurez-vous que le nom de champ correspond à la base de données
+        allowNull: true // Permettre que ce champ soit null puisqu'il s'agira d'un lien URL facultatif
+      },
+      
       ApprouveParAdmin: {
         type: DataTypes.BOOLEAN,
         field: 'approuvéparadmin', // Assurez-vous que le nom de champ correspond exactement à celui dans votre base de données. PostgreSQL est sensible à la casse, donc assurez-vous que la casse correspond.

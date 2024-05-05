@@ -5,6 +5,9 @@ const cors = require("cors");
 require("./auth");
 const app = express();
 require('dotenv').config();
+const multer = require('multer');
+const path = require('path');
+
 
 
 
@@ -46,6 +49,25 @@ function isLoggedIn(req, res, next) {
   res.json({ message: "Bonsoir." });
 });
  */
+
+/* // Configuration de Multer pour stocker les fichiers téléchargés
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, 'uploads/')  // Assurez-vous que ce dossier existe et est accessible en écriture
+  },
+  filename: function(req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
+  }
+});
+
+
+const upload = multer({ storage: storage }); */
+
+/* app.post('/upload', upload.single('imglink'), (req, res) => {
+  res.send('Fichier uploadé avec succès!');
+}); */
+
 app.get("/", (req, res) => {
   res.send('<a href="/auth/google"> Auth with google auth</a>');
 });
