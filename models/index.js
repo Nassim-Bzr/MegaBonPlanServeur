@@ -36,6 +36,9 @@ db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 db.bonplans.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur' });
 db.utilisateurs.hasMany(db.bonplans, { foreignKey: 'id_utilisateur' });
 
+db.bonplans.hasMany(db.favoris, { as: 'Favoris', foreignKey: 'id_bonplan' });
+db.favoris.belongsTo(db.bonplans, { as: 'BonPlan', foreignKey: 'id_bonplan' });
+
 // Associations entre BonPlans et Commentaires
 db.bonplans.hasMany(db.commentaires, {
   foreignKey: 'id_bonplan', // Assurez-vous que le nom de la clé étrangère est correct
@@ -49,8 +52,7 @@ db.commentaires.belongsTo(db.bonplans, {
 db.bonplans.belongsTo(db.categories, { foreignKey: 'ID_Categorie' });
 db.categories.hasMany(db.bonplans, { foreignKey: 'ID_Categorie' });
 
-db.utilisateurs.belongsToMany(db.bonplans, { through: 'favoris' });
-db.bonplans.belongsToMany(db.utilisateurs, { through: 'favoris' });
+
 
 db.codepromos.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'Utilisateur' });
 db.utilisateurs.hasMany(db.codepromos, { foreignKey: 'id_utilisateur', as: 'CodePromos' });
