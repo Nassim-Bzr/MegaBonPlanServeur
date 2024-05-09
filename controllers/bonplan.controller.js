@@ -63,7 +63,13 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   const id = req.params.id;
   try {
-    const data = await BonPlan.findByPk(id);
+    const data = await BonPlan.findByPk(id, {
+      include: [{
+        model: db.commentaires,
+        as: 'commentaires',
+        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur'] // Spécifiez les attributs que vous souhaitez inclure
+      }]
+    });
     if (data) {
       res.send(data);
     } else {

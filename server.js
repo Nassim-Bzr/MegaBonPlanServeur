@@ -7,7 +7,7 @@ const app = express();
 require('dotenv').config();
 const multer = require('multer');
 const path = require('path');
-
+const favorisRoutes = require('./routes/favoris.routes');
 
 
 
@@ -37,6 +37,8 @@ require("./routes/commentary.routes")(app);
 require("./routes/codepromos.routes")(app);
 require("./routes/discussions.routes")(app);
 require("./routes/utilisateur.routes")(app);
+require("./routes/favoris.routes")(app);
+
 
 
 // Répétez pour d'autres entités en important leurs routeurs correspondants
