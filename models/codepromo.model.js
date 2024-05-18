@@ -21,7 +21,21 @@ module.exports = (sequelize, DataTypes) => {
       },
       approuvéparadmin: {
           type: DataTypes.BOOLEAN
-      }
+      },
+      marchand:{
+        type: DataTypes.TEXT
+      },
+      imgmarchand:{
+        type: DataTypes.STRING
+      },
+
+      reduction:{
+        type: DataTypes.STRING
+      },
+
+      montant:{
+        type: DataTypes.STRING
+      },
   }, {
       tableName: 'codepromo',
       timestamps: false

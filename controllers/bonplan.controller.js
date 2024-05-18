@@ -60,6 +60,7 @@ exports.findAll = async (req, res) => {
 };
 
 // Trouver un BonPlan par son ID
+
 exports.findOne = async (req, res) => {
   const id = req.params.id;
   try {
@@ -67,10 +68,11 @@ exports.findOne = async (req, res) => {
       include: [{
         model: db.commentaires,
         as: 'commentaires',
-        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur'] // Spécifiez les attributs que vous souhaitez inclure
+        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur']
       }]
     });
     if (data) {
+      console.log(data); // Ajout d'un log pour vérifier les données
       res.send(data);
     } else {
       res.status(404).send({
@@ -78,6 +80,7 @@ exports.findOne = async (req, res) => {
       });
     }
   } catch (err) {
+    console.error(err); // Ajout d'un log pour les erreurs
     res.status(500).send({
       message: "Erreur lors de la récupération du BonPlan avec l'ID " + id
     });

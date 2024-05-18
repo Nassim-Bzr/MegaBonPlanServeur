@@ -15,11 +15,18 @@ module.exports = (sequelize, DataTypes) => {
       datecommentaire: {
         type: DataTypes.DATE,
       },
+      id_utilisateur: {
+        type: DataTypes.INTEGER,
+      },
+      id_bonplan: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      }
     },
     {
-      tableName: "commentaire", // Ici tu forces Sequelize à utiliser le nom de table exact
-      timestamps: false, // Désactivez les champs createdAt et updatedAt
-      freezeTableName: true, // Empêche S
+      tableName: "commentaire",
+      timestamps: false,
+      freezeTableName: true,
     }
   );
 

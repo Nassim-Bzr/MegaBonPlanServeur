@@ -49,8 +49,8 @@ db.commentaires.belongsTo(db.bonplans, {
   foreignKey: 'id_bonplan',
   as: 'bonplan' // Cela permettra d'accéder au bon plan associé à un commentaire par commentaire.bonplan
 });
-db.bonplans.belongsTo(db.categories, { foreignKey: 'ID_Categorie' });
-db.categories.hasMany(db.bonplans, { foreignKey: 'ID_Categorie' });
+db.bonplans.belongsTo(db.categories, { foreignKey: 'id_categorie' });
+db.categories.hasMany(db.bonplans, { foreignKey: 'id_categorie' });
 
 
 
