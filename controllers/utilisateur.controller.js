@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const db = require("../models");
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
@@ -67,33 +66,6 @@ exports.create = async (req, res) => {
 // Méthode pour vérifier le code de l'utilisateur
 
 exports.verifyUser = async (req, res) => {
-    const { email, code } = req.body;
-    try {
-      const utilisateur = await Utilisateur.findOne({
-        where: {
-          email,
-          verificationcodeexpires: {
-            [Op.gt]: new Date() // Comparer les dates
-          }
-        }
-      });
-      if (!utilisateur) {
-        return res.status(404).send({ message: "Utilisateur non trouvé ou code expiré." });
-      }
-  
-      if (utilisateur.verificationcode === code) {
-        utilisateur.isverified = true;
-        await utilisateur.save();
-        res.send({ message: "Compte vérifié avec succès !" });
-      } else {
-        res.status(400).send({ message: "Code de vérification incorrect." });
-      }
-    } catch (err) {
-      console.error("Verification error:", err);
-      res.status(500).send({ message: err.message });
-    }
-  };
-  
     const { email, code } = req.body;
     try {
       const utilisateur = await Utilisateur.findOne({
@@ -225,6 +197,7 @@ exports.deleteAll = async (req, res) => {
     }
 }
 // Connexion d'un utilisateur
+const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
     const { email, motdepasse } = req.body;
@@ -271,4 +244,5 @@ exports.login = async (req, res) => {
       res.status(500).send({ message: err.message || "Une erreur est survenue lors de la tentative de connexion." });
     }
   };
+  
 

@@ -12,8 +12,8 @@ const favorisRoutes = require('./routes/favoris.routes');
 
 
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://mega-bon-plan-cgji.vercel.app'
+" ttps://mega-bon-plan-kh2y.vercel.app/inscription",
+"http://localhost:3000"
 ];
 
 const corsOptions = {
