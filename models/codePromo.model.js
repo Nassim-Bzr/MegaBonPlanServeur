@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       id_utilisateur: {
           type: DataTypes.INTEGER
+          
       },
       approuvéparadmin: {
           type: DataTypes.BOOLEAN
