@@ -1,10 +1,10 @@
+require('dotenv').config();
 const express = require("express");
 const passport = require("passport");
 const session = require("express-session");
 const cors = require("cors");
 require("./auth");
 const app = express();
-require('dotenv').config();
 const multer = require('multer');
 const path = require('path');
 const db = require('./models'); // Importez les modèles

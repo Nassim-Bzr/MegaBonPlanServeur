@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const db = require("../models");
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
@@ -66,6 +67,33 @@ exports.create = async (req, res) => {
 // Méthode pour vérifier le code de l'utilisateur
 
 exports.verifyUser = async (req, res) => {
+    const { email, code } = req.body;
+    try {
+      const utilisateur = await Utilisateur.findOne({
+        where: {
+          email,
+          verificationcodeexpires: {
+            [Op.gt]: new Date() // Comparer les dates
+          }
+        }
+      });
+      if (!utilisateur) {
+        return res.status(404).send({ message: "Utilisateur non trouvé ou code expiré." });
+      }
+  
+      if (utilisateur.verificationcode === code) {
+        utilisateur.isverified = true;
+        await utilisateur.save();
+        res.send({ message: "Compte vérifié avec succès !" });
+      } else {
+        res.status(400).send({ message: "Code de vérification incorrect." });
+      }
+    } catch (err) {
+      console.error("Verification error:", err);
+      res.status(500).send({ message: err.message });
+    }
+  };
+  
     const { email, code } = req.body;
     try {
       const utilisateur = await Utilisateur.findOne({
@@ -197,51 +225,50 @@ exports.deleteAll = async (req, res) => {
     }
 }
 // Connexion d'un utilisateur
-const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
     const { email, motdepasse } = req.body;
-
+  
     try {
-        const utilisateur = await Utilisateur.findOne({ where: { email } });
-
-        if (!utilisateur) {
-            return res.status(404).send({ message: "Utilisateur non trouvé." });
+      const utilisateur = await Utilisateur.findOne({ where: { email } });
+  
+      if (!utilisateur) {
+        return res.status(404).send({ message: "Utilisateur non trouvé." });
+      }
+  
+      if (!utilisateur.isverified) {
+        return res.status(401).send({ message: "Compte non vérifié. Veuillez vérifier votre compte.", verify: true });
+      }
+  
+      const isMatch = await bcrypt.compare(motdepasse, utilisateur.motdepasse);
+      if (!isMatch) {
+        return res.status(401).send({ message: "Mot de passe incorrect !" });
+      }
+  
+      const payload = {
+        user: {
+          id: utilisateur.id,
+          email: utilisateur.email,
+          isadmin: utilisateur.isadmin,
+          nom: utilisateur.nom,
+          token: utilisateur,
         }
-
-        if (!utilisateur.isverified) {
-            return res.status(401).send({ message: "Compte non vérifié. Veuillez vérifier votre compte.", verify: true });
+      };
+  
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: 3600 },
+        (err, token) => {
+          if (err) throw err;
+          res.json({
+            user: payload.user,
+            token: token
+          });
         }
-
-        const isMatch = await bcrypt.compare(motdepasse, utilisateur.motdepasse);
-        if (!isMatch) {
-            return res.status(401).send({ message: "Mot de passe incorrect !" });
-        }
-
-        const payload = {
-            user: {
-                id: utilisateur.id,
-                email: utilisateur.email,
-                isadmin: utilisateur.isadmin,
-                nom: utilisateur.nom,
-                token: utilisateur,
-            }
-        };
-
-        jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: 3600 },
-            (err, token) => {
-                if (err) throw err;
-                res.json({
-                    user: payload.user,
-                    token: token
-                });
-            }
-        );
+      );
     } catch (err) {
-        res.status(500).send({ message: err.message || "Une erreur est survenue lors de la tentative de connexion." });
+      res.status(500).send({ message: err.message || "Une erreur est survenue lors de la tentative de connexion." });
     }
-};
+  };
 
