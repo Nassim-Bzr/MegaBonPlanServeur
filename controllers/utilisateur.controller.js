@@ -3,23 +3,23 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
-const { Op } = require('sequelize'); // Ajoutez ceci au début de votre fichier de contrôleur
+const { Op } = require('sequelize');
 
 const Utilisateur = db.utilisateurs;
 
 // Fonction pour générer un code de vérification
 const generateVerificationCode = () => {
-  return crypto.randomBytes(3).toString('hex'); // Génère un code hexadécimal
+  return crypto.randomBytes(3).toString('hex');
 };
 
 // Configurer le transporter pour Nodemailer avec SMTP
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
-  secure: true, // true for 465, false for other ports
+  secure: true,
   auth: {
-    user: process.env.EMAIL_USERNAME, // Ton email
-    pass: process.env.EMAIL_APP_PASSWORD // Le mot de passe d'application
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_APP_PASSWORD
   }
 });
 
@@ -43,24 +43,24 @@ const sendVerificationEmail = (email, code) => {
 
 // Créer un utilisateur avec isVerified à false
 exports.create = async (req, res) => {
-    try {
-        const code = generateVerificationCode();
-        const utilisateur = {
-            nom: req.body.nom,
-            email: req.body.email,
-            motdepasse: await bcrypt.hash(req.body.motdepasse, 10),
-            isadmin: req.body.isadmin || false,
-            verificationcode: code,
-            verificationcodeexpires: new Date(Date.now() + 3600000),
-            isverified: false  // Utilisateur n'est pas encore vérifié
-        };
-        const data = await Utilisateur.create(utilisateur);
-        sendVerificationEmail(req.body.email, code);
-        res.status(201).send(data);
-    } catch (err) {
-        console.error("Error during user creation:", err);
-        res.status(500).send({ message: err.message });
-    }
+  try {
+    const code = generateVerificationCode();
+    const utilisateur = {
+      nom: req.body.nom,
+      email: req.body.email,
+      motdepasse: await bcrypt.hash(req.body.motdepasse, 10),
+      isadmin: req.body.isadmin || false,
+      verificationcode: code,
+      verificationcodeexpires: new Date(Date.now() + 3600000),
+      isverified: false
+    };
+    const data = await Utilisateur.create(utilisateur);
+    sendVerificationEmail(req.body.email, code);
+    res.status(201).send(data);
+  } catch (err) {
+    console.error("Error during user creation:", err);
+    res.status(500).send({ message: err.message });
+  }
 };
 
 // Méthode pour vérifier le code de l'utilisateur
@@ -68,30 +68,31 @@ exports.create = async (req, res) => {
 exports.verifyUser = async (req, res) => {
     const { email, code } = req.body;
     try {
-        const utilisateur = await Utilisateur.findOne({
-            where: {
-                email,
-                verificationcodeexpires: {
-                    [Op.gt]: new Date() // Utilisez Op.gt pour comparer les dates
-                }
-            }
-        });
-        if (!utilisateur) {
-            return res.status(404).send({ message: "Utilisateur non trouvé ou code expiré." });
+      const utilisateur = await Utilisateur.findOne({
+        where: {
+          email,
+          verificationcodeexpires: {
+            [Op.gt]: new Date() // Comparer les dates
+          }
         }
-
-        if (utilisateur.verificationcode === code) {
-            utilisateur.isverified = true;
-            await utilisateur.save();
-            res.send({ message: "Compte vérifié avec succès !" });
-        } else {
-            res.status(400).send({ message: "Code de vérification incorrect." });
-        }
+      });
+      if (!utilisateur) {
+        return res.status(404).send({ message: "Utilisateur non trouvé ou code expiré." });
+      }
+  
+      if (utilisateur.verificationcode === code) {
+        utilisateur.isverified = true;
+        await utilisateur.save();
+        res.send({ message: "Compte vérifié avec succès !" });
+      } else {
+        res.status(400).send({ message: "Code de vérification incorrect." });
+      }
     } catch (err) {
-        console.error("Verification error:", err);
-        res.status(500).send({ message: err.message });
+      console.error("Verification error:", err);
+      res.status(500).send({ message: err.message });
     }
-};
+  };
+  
 
 
 
