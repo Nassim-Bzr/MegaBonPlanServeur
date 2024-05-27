@@ -12,7 +12,7 @@ const favorisRoutes = require('./routes/favoris.routes');
 
 
 const allowedOrigins = [
-" ttps://mega-bon-plan-kh2y.vercel.app/inscription",
+"https://mega-bon-plan-cgji.vercel.app",
 "http://localhost:3000"
 ];
 
