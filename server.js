@@ -10,8 +10,21 @@ const path = require('path');
 const db = require('./models'); // Importez les modèles
 const favorisRoutes = require('./routes/favoris.routes');
 
-var corsOptions = {
-  origin: "*", // Autoriser toutes les origines
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://mega-bon-plan-cgji.vercel.app'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 };
 
 app.use(session({
