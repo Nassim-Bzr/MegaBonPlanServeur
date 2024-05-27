@@ -12,19 +12,19 @@ const BonPlan = db.bonplans; // Assurez-vous que cela correspond à la façon do
 
 // Créer et sauvegarder un nouveau BonPlan
 exports.create = async (req, res) => {
-  if (!req.body.Titre) {
+  if (!req.body.titre) {
     return res.status(400).send({
       message: "Le titre est nécessaire."
     });
   }
 
   const bonPlan = {
-    Titre: req.body.Titre,
-    Description: req.body.Description,
-    LienAffiliation: req.body.LienAffiliation,
-    ID_Categorie: req.body.ID_Categorie,
-    DatePost: req.body.DatePost || new Date(),
-    ApprouveParAdmin: req.body.ApprouveParAdmin || false,
+    titre: req.body.titre,
+    description: req.body.description,
+    lienaffiliation: req.body.lienaffiliation,
+    id_categorie: req.body.id_categorie,
+    datePost: req.body.datePost || new Date(),
+    approuvéparadmin: req.body.approuveparadmin || false,
     imglink: req.body.imglink // Utilisation directe de l'URL fournie
   };
 
@@ -93,7 +93,7 @@ exports.update = async (req, res) => {
   try {
     const num = await BonPlan.update(req.body, {
       where: {
-        ID_BonPlan: id
+        id_bonplan: id
       }
     });
     if (num == 1) {
@@ -162,7 +162,7 @@ exports.findByCategory = async (req, res) => {
   try {
     const data = await BonPlan.findAll({
       where: {
-        ID_Categorie: idCategorie
+       id_categorie : idCategorie
       }
     });
     if (data.length > 0) {
@@ -185,7 +185,7 @@ exports.findPending = async (req, res) => {
   try {
     const pendingBonPlans = await BonPlan.findAll({
       where: {
-        ApprouveParAdmin: false
+        approuvéparadmin: false
       }
     });
     res.send(pendingBonPlans);
@@ -208,7 +208,7 @@ exports.toggleApproval = async (req, res) => {
     }
 
     const updated = await bonPlan.update({
-      ApprouveParAdmin: !bonPlan.ApprouveParAdmin
+      approuvéparadmin: !bonPlan.approuvéparadmin
     });
 
     res.send({
