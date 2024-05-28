@@ -2,9 +2,8 @@ require('dotenv').config();
 const db = require("../models");
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
-const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize');
 const { sendVerificationEmail } = require('../mailer');
 
 const Utilisateur = db.utilisateurs;
@@ -14,49 +13,7 @@ const generateVerificationCode = () => {
   return crypto.randomBytes(3).toString('hex');
 };
 
-// Configurer le transporter pour Nodemailer avec SMTP
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USERNAME, // Ton email
-    pass: process.env.EMAIL_APP_PASSWORD // Le mot de passe d'application
-  }
-});
-
-// Fonction pour envoyer l'email de vérification
-const sendVerificationEmail = (email, code) => {
-  const mailOptions = {
-    from: process.env.EMAIL_USERNAME,
-    to: email,
-    subject: 'Votre code de vérification',
-    html: `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-      <h1 style="text-align: center; color: #4CAF50; ">MegaBonPlan</h1>
-      <p>Bonjour,</p>
-      <p>Voici votre code de vérification pour votre compte MegaBonPlan :</p>
-      <div style="text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0;">
-        ${code}
-      </div>
-      <p>Ce code doit uniquement être utilisé pour vérifier votre compte sur notre site.</p>
-      <p>Merci de votre confiance et à bientôt sur <a href="https://megabonplan-f8522b195111.herokuapp.com">MegaBonPlan</a>.</p>
-      <hr>
-      <p style="font-size: 12px; color: #777;">Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet email.</p>
-    </div>
-  `
-};
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log('Erreur lors de l\'envoi de l\'email: ', error);
-    } else {
-      console.log('Email envoyé: ' + info.response);
-    }
-  });
-};
-
-// Créer un utilisateur avec isVerified à false// Créer un utilisateur avec isVerified à false
+// Créer un utilisateur avec isVerified à false
 exports.create = async (req, res) => {
     try {
       const code = generateVerificationCode();
@@ -73,7 +30,18 @@ exports.create = async (req, res) => {
   
       // Envoyer l'email de vérification
       const emailSubject = 'Votre code de vérification';
-      const emailBody = `<p>Votre code de vérification est ${code}</p>`;
+      const emailBody = `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <h1 style="text-align: center; color: #4CAF50;">MegaBonPlan</h1>
+      <p>Bonjour,</p>
+      <p>Voici votre code de vérification pour votre compte MegaBonPlan :</p>
+      <div style="text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0;">
+        ${code}
+      </div>
+      <p>Ce code doit uniquement être utilisé pour vérifier votre compte sur notre site.</p>
+      <p>Merci de votre confiance et à bientôt sur <a href="https://megabonplan-f8522b195111.herokuapp.com">MegaBonPlan</a>.</p>
+      <hr>
+      <p style="font-size: 12px; color: #777;">Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet email.</p>
+    </div>`;
       sendVerificationEmail(req.body.email, emailSubject, emailBody);
   
       res.status(201).send(data);
