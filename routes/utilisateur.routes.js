@@ -1,29 +1,29 @@
-const auth = require('../middleware/auth.middleware');
-// utilisateurs routes
+const express = require('express');
+const router = express.Router();
+const utilisateurs = require("../controllers/utilisateur.controller.js");
 
-module.exports = app => {
-  const utilisateurs = require("../controllers/utilisateur.controller.js");
+// Créer un nouvel utilisateur
+router.post('/', utilisateurs.create);
 
-  var router = require("express").Router();
-
-  // Créer un nouvel utilisateur
-
-
-  // Récupérer tous les utilisateurs
-  router.post('/', utilisateurs.create);
+// Récupérer tous les utilisateurs
 router.get('/', utilisateurs.findAll);
+
+// Récupérer un utilisateur par son ID
 router.get('/:id', utilisateurs.findOne);
+
+// Mettre à jour un utilisateur par son ID
 router.put('/:id', utilisateurs.update);
+
+// Supprimer un utilisateur par son ID
 router.delete('/:id', utilisateurs.delete);
-  router.get("/", utilisateurs.findAll);
-// Route de connexion
+
+// Supprimer tous les utilisateurs
 router.delete("/", utilisateurs.deleteAll);
+
+// Route de connexion
 router.post('/login', utilisateurs.login);
-router.post('/verify', utilisateurs.verifyUser)
 
+// Route de vérification
+router.post('/verify', utilisateurs.verifyUser);
 
-  // Récupérer un utilisateur par son ID
- 
-
-  app.use('/api/utilisateur', router);
-}
+module.exports = router;

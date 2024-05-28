@@ -3,13 +3,14 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
-const { Op } = require('sequelize'); // Ajoutez ceci au début de votre fichier de contrôleur
+const { Op } = require('sequelize');
+const jwt = require('jsonwebtoken');
 
 const Utilisateur = db.utilisateurs;
 
 // Fonction pour générer un code de vérification
 const generateVerificationCode = () => {
-  return crypto.randomBytes(3).toString('hex'); // Génère un code hexadécimal
+  return crypto.randomBytes(3).toString('hex');
 };
 
 // Configurer le transporter pour Nodemailer avec SMTP
@@ -64,7 +65,6 @@ exports.create = async (req, res) => {
 };
 
 // Méthode pour vérifier le code de l'utilisateur
-
 exports.verifyUser = async (req, res) => {
     const { email, code } = req.body;
     try {
@@ -93,8 +93,6 @@ exports.verifyUser = async (req, res) => {
     }
 };
 
-
-
 // Récupérer tous les utilisateurs
 exports.findAll = async (req, res) => {
     try {
@@ -102,9 +100,7 @@ exports.findAll = async (req, res) => {
         res.send(data);
     } catch (err) {
         res.status(500).send({
-            message:
-                err.message ||
-                "Une erreur est survenue lors de la récupération des utilisateurs.",
+            message: err.message || "Une erreur est survenue lors de la récupération des utilisateurs.",
         });
     }
 };
@@ -122,16 +118,14 @@ exports.findOne = async (req, res) => {
         }
     } catch (err) {
         res.status(500).send({
-            message:
-                err.message ||
-                "Une erreur est survenue lors de la récupération de l'utilisateur.",
+            message: err.message || "Une erreur est survenue lors de la récupération de l'utilisateur.",
         });
     }
 };
 
 // Mettre à jour un utilisateur par son ID
 exports.update = async (req, res) => {
-    const id = req.params.id;  // Assure-toi que le paramètre dans la route est correctement nommé
+    const id = req.params.id;
 
     try {
         const [updatedRows] = await Utilisateur.update(req.body, {
@@ -149,8 +143,6 @@ exports.update = async (req, res) => {
         });
     }
 };
-
-
 
 // Supprimer un utilisateur par son ID
 exports.delete = async (req, res) => {
@@ -174,9 +166,8 @@ exports.delete = async (req, res) => {
         });
     }
 };
- 
-// Supprimer tous les utilisateurs
 
+// Supprimer tous les utilisateurs
 exports.deleteAll = async (req, res) => {
     try {
         const deletedRows = await Utilisateur.destroy({
@@ -189,15 +180,12 @@ exports.deleteAll = async (req, res) => {
         });
     } catch (err) {
         res.status(500).send({
-            message:
-                err.message ||
-                "Une erreur est survenue lors de la suppression des utilisateurs.",
+            message: err.message || "Une erreur est survenue lors de la suppression des utilisateurs.",
         });
     }
-}
-// Connexion d'un utilisateur
-const jwt = require('jsonwebtoken');
+};
 
+// Connexion d'un utilisateur
 exports.login = async (req, res) => {
     const { email, motdepasse } = req.body;
 
@@ -219,11 +207,10 @@ exports.login = async (req, res) => {
 
         const payload = {
             user: {
-                id: utilisateur.id,
+                id: utilisateur.id_utilisateur,
                 email: utilisateur.email,
                 isadmin: utilisateur.isadmin,
                 nom: utilisateur.nom,
-                token: utilisateur,
             }
         };
 
