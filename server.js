@@ -18,7 +18,6 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
-// Configuration de la session
 app.use(session({
   secret: 'votre secret',
   resave: false,
