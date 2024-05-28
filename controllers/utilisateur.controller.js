@@ -30,8 +30,21 @@ const sendVerificationEmail = (email, code) => {
     from: process.env.EMAIL_USERNAME,
     to: email,
     subject: 'Votre code de vérification',
-    text: `Votre code de vérification est ${code}`
-  };
+    html: `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <h1 style="text-align: center; color: #4CAF50; ">MegaBonPlan</h1>
+      <p>Bonjour,</p>
+      <p>Voici votre code de vérification pour votre compte MegaBonPlan :</p>
+      <div style="text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0;">
+        ${code}
+      </div>
+      <p>Ce code doit uniquement être utilisé pour vérifier votre compte sur notre site.</p>
+      <p>Merci de votre confiance et à bientôt sur <a href="https://megabonplan-f8522b195111.herokuapp.com">MegaBonPlan</a>.</p>
+      <hr>
+      <p style="font-size: 12px; color: #777;">Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet email.</p>
+    </div>
+  `
+};
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
