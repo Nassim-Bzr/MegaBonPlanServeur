@@ -179,20 +179,20 @@ exports.login = async (req, res) => {
 
     try {
         const utilisateur = await Utilisateur.findOne({ where: { email } });
-    
+
         if (!utilisateur) {
             return res.status(404).send({ message: "Utilisateur non trouvé." });
         }
-    
+
         if (!utilisateur.isverified) {
             return res.status(401).send({ message: "Compte non vérifié. Veuillez vérifier votre compte.", verify: true });
         }
-    
+
         const isMatch = await bcrypt.compare(motdepasse, utilisateur.motdepasse);
         if (!isMatch) {
             return res.status(401).send({ message: "Mot de passe incorrect !" });
         }
-    
+
         const payload = {
             user: {
                 id: utilisateur.id_utilisateur,
@@ -201,10 +201,10 @@ exports.login = async (req, res) => {
                 nom: utilisateur.nom,
             }
         };
-    
+
         jwt.sign(
             payload,
-            process.env.JWT_SECRET, // Assurez-vous que cette ligne utilise bien votre clé secrète
+            process.env.JWT_SECRET,
             { expiresIn: 3600 },
             (err, token) => {
                 if (err) throw err;
@@ -216,4 +216,5 @@ exports.login = async (req, res) => {
         );
     } catch (err) {
         res.status(500).send({ message: err.message || "Une erreur est survenue lors de la tentative de connexion." });
-    };
+    }
+};
