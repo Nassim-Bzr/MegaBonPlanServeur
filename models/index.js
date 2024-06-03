@@ -45,21 +45,14 @@ db.codepromos = require("./CodePromo.model.js")(sequelize, Sequelize);
 db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 
 // Associations
-db.bonplans.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur' });
-db.utilisateurs.hasMany(db.bonplans, { foreignKey: 'id_utilisateur' });
-db.bonplans.hasMany(db.favoris, { as: 'Favoris', foreignKey: 'id_bonplan' });
-db.favoris.belongsTo(db.bonplans, { as: 'BonPlan', foreignKey: 'id_bonplan' });
-db.bonplans.hasMany(db.commentaires, {
-  foreignKey: 'id_bonplan',
-  as: 'commentaires'
-});
-db.commentaires.belongsTo(db.bonplans, {
-  foreignKey: 'id_bonplan',
-  as: 'bonplan'
-});
-db.bonplans.belongsTo(db.categories, { foreignKey: 'id_categorie' });
-db.categories.hasMany(db.bonplans, { foreignKey: 'id_categorie' });
-db.codepromos.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'Utilisateur' });
-db.utilisateurs.hasMany(db.codepromos, { foreignKey: 'id_utilisateur', as: 'CodePromos' });
-
+db.bonplans.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.bonplans, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+db.bonplans.hasMany(db.favoris, { as: 'Favoris', foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+db.favoris.belongsTo(db.bonplans, { as: 'BonPlan', foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+db.bonplans.hasMany(db.commentaires, { foreignKey: 'id_bonplan', as: 'commentaires', onDelete: 'CASCADE' });
+db.commentaires.belongsTo(db.bonplans, { foreignKey: 'id_bonplan', as: 'bonplan', onDelete: 'CASCADE' });
+db.bonplans.belongsTo(db.categories, { foreignKey: 'id_categorie', onDelete: 'CASCADE' });
+db.categories.hasMany(db.bonplans, { foreignKey: 'id_categorie', onDelete: 'CASCADE' });
+db.codepromos.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'Utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.codepromos, { foreignKey: 'id_utilisateur', as: 'CodePromos', onDelete: 'CASCADE' });
 module.exports = db;

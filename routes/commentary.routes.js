@@ -13,6 +13,8 @@ const checkAuth = (req, res, next) => {
     }
   };
   
+
+
   // Middleware pour vérifier si l'utilisateur est admin
 /*   const checkAdmin = (req, res, next) => {
     if (req.user && req.user.isAdmin) {
@@ -28,6 +30,10 @@ const checkAuth = (req, res, next) => {
   // Route pour supprimer un commentaire
   router.delete("/:id", commentary.delete);
   
+  //delete all
+
+  router.delete("/", commentary.deleteAll);
+
 // Create a new Commentary
   router.get("/", commentary.getAllcommentary)
 

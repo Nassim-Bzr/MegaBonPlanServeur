@@ -4,6 +4,19 @@ const { Op } = require("sequelize");
 const Commentary = db.commentaires;
 
 
+//delete all 
+
+exports.deleteAll = async (req, res) => {
+  try {
+    await Commentary.destroy({ where: {} });
+    res.send({ message: "Tous les commentaires ont été supprimés avec succès" });
+  } catch (error) {
+    res.status(500).send({
+      message: "Erreur lors de la suppression des commentaires"
+    });
+  }
+};
+
 exports.getAllcommentary = async (req, res) => {
   try {
     const commentaries = await Commentary.findAll();
