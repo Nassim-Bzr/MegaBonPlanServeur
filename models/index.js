@@ -4,7 +4,10 @@ const dotenv = require('dotenv');
 // Charger les variables d'environnement à partir du fichier .env en développement
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
+  console.log('Chargement des variables d\'environnement en développement');
 }
+
+console.log('DATABASE_URL:', process.env.DATABASE_URL); // Vérifiez que l'URL est correcte
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -12,10 +15,10 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   protocol: 'postgres',
   dialectOptions: {
-    ssl: isProduction ? {
+    ssl: {
       require: true,
       rejectUnauthorized: false
-    } : false
+    }
   },
   pool: {
     max: 5,
@@ -26,7 +29,6 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 });
 
 const db = {};
-
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 

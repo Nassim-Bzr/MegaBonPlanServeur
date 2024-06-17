@@ -139,23 +139,34 @@ exports.findOne = async (req, res) => {
 // Mettre à jour un utilisateur par son ID
 exports.update = async (req, res) => {
     const id = req.params.id;
-
+    console.log(`Update request for user ID: ${id}`); // Ajout de console.log
+  
     try {
-        const [updatedRows] = await Utilisateur.update(req.body, {
-            where: { id_utilisateur: id },
-        });
-
-        if (updatedRows === 1) {
-            res.send({ message: "Utilisateur mis à jour avec succès." });
-        } else {
-            res.status(404).send({ message: "Utilisateur non trouvé." });
-        }
+      const user = await Utilisateur.findByPk(id);
+      console.log(`Utilisateur trouvé : ${user}`); // Log supplémentaire
+  
+      if (!user) {
+        console.log("Utilisateur non trouvé");
+        return res.status(404).send({ message: "Utilisateur non trouvé." });
+      }
+  
+      const [updatedRows] = await Utilisateur.update(req.body, {
+        where: { id: id },
+      });
+  
+      if (updatedRows === 1) {
+        res.send({ message: "Utilisateur mis à jour avec succès." });
+      } else {
+        res.status(404).send({ message: "Utilisateur non trouvé." });
+      }
     } catch (err) {
-        res.status(500).send({
-            message: err.message || "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
-        });
+      console.error("Erreur lors de la mise à jour :", err);
+      res.status(500).send({
+        message: err.message || "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
+      });
     }
-};
+  };
+  
 
 // Supprimer un utilisateur par son ID
 exports.delete = async (req, res) => {
