@@ -19,9 +19,7 @@ exports.findAll = async (req, res) => {
 
 exports.create = async (req, res) => {
     console.log("Requête reçue pour créer une discussion:", req.body); // Log de débogage
-    if (!req.body.titre || !req.body.content || !req.body.id_utilisateur || !req.body.id_category) {
-        return res.status(400).send({ message: "Tous les champs sont requis: titre, contenu, id_utilisateur, id_category" });
-    }
+    
 
     const discussion = {
         titre: req.body.titre,
