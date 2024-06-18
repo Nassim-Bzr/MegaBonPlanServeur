@@ -18,6 +18,8 @@ exports.findAll = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
+        console.log("Requête reçue pour créer une discussion:", req.body); // Log de débogage
+
         const discussion = await Discussion.create({
             titre: req.body.titre,
             datecreation: req.body.datecreation,
@@ -26,9 +28,12 @@ exports.create = async (req, res) => {
             authorId: req.body.authorId,
             categoryId: req.body.categoryId
         });
+
+        console.log("Discussion créée avec succès:", discussion); // Log de succès
         res.status(201).send(discussion);
     } catch (e) {
-        console.log(e);
+        console.error("Erreur lors de la création de la discussion:", e); // Log d'erreur détaillé
         res.status(500).send({ message: "Erreur lors de la création de la discussion." });
     }
 };
+
