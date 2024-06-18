@@ -252,3 +252,42 @@ exports.login = async (req, res) => {
         res.status(500).send({ message: err.message || "Une erreur est survenue lors de la tentative de connexion." });
     }
 };
+
+
+
+exports.updatePassword = async (req, res) => {
+  const id = req.params.id;
+  const { oldPassword, newPassword } = req.body;
+  console.log(`Update password request for user ID: ${id}`);
+
+  try {
+    const user = await Utilisateur.findOne({ where: { id_utilisateur: id } });
+    console.log(`Utilisateur trouvé : ${JSON.stringify(user, null, 2)}`); // Log supplémentaire
+
+    if (!user) {
+      console.log("Utilisateur non trouvé");
+      return res.status(404).send({ message: "Utilisateur non trouvé." });
+    }
+
+    // Vérification de l'ancien mot de passe
+    const isMatch = await bcrypt.compare(oldPassword, user.motdepasse);
+    if (!isMatch) {
+      console.log("Ancien mot de passe incorrect");
+      return res.status(400).send({ message: "Ancien mot de passe incorrect." });
+    }
+
+    // Hachage du nouveau mot de passe
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Mise à jour du mot de passe
+    user.motdepasse = hashedPassword;
+    await user.save();
+
+    res.send({ message: "Mot de passe mis à jour avec succès." });
+  } catch (err) {
+    console.error("Erreur lors de la mise à jour du mot de passe :", err);
+    res.status(500).send({
+      message: err.message || "Une erreur est survenue lors de la mise à jour du mot de passe.",
+    });
+  }
+};
