@@ -15,12 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     isadmin: DataTypes.BOOLEAN,
     verificationcode: DataTypes.STRING,
     verificationcodeexpires: DataTypes.DATE,
-    isverified: { // Nouveau champ
+    isverified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     }
   }, {
-    tableName: 'utilisateur',
+    tableName: 'utilisateur', // nom correct de la table
     timestamps: false
   });
 

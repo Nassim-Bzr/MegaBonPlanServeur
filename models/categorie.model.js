@@ -4,25 +4,23 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      field: 'id_categorie' // Assurez-vous que le nom de champ correspond à la base de données
+      field: 'id_categorie'
     },
     nomcategorie: {
       type: DataTypes.STRING,
-      field: 'nomcategorie', // Assurez-vous que le nom de champ correspond à la base de données
-      allowNull: false // Assurez-vous que ce champ ne peut pas être null
+      field: 'nomcategorie',
+      allowNull: false
     },
     imglink: {
       type: DataTypes.STRING,
-      field: 'imglink', // Assurez-vous que le nom de champ correspond à la base de données
-      allowNull: false // Assurez-vous que ce champ ne peut pas être null
+      field: 'imglink',
+      allowNull: false
     }
   }, {
-    tableName: 'categorie', // Utilisez le nom exact de votre table ici
-    timestamps: false, // Désactivez les champs createdAt et updatedAt
-    freezeTableName: true // Empêche Sequelize de pluraliser le nom de la table
+    tableName: 'categorie', // nom correct de la table
+    timestamps: false,
+    freezeTableName: true
   });
 
   return Categorie;
 };
-
-
