@@ -1,4 +1,3 @@
-// utilisateur.controller.js
 require('dotenv').config();
 const db = require("../models");
 const bcrypt = require('bcrypt');
@@ -60,9 +59,14 @@ exports.create = async (req, res) => {
         console.log('Email subject:', emailSubject);
         console.log('Email body:', emailBody);
 
-        await sendVerificationEmail(email, emailSubject, emailBody);
-
-        console.log('Verification email sent successfully');
+        // Ajoutez un bloc try-catch pour capturer et loguer les erreurs d'envoi d'email
+        try {
+            await sendVerificationEmail(email, emailSubject, emailBody);
+            console.log('Verification email sent successfully');
+        } catch (emailErr) {
+            console.error('Error sending verification email:', emailErr);
+            return res.status(500).send({ message: 'Erreur lors de l\'envoi de l\'email de vérification.' });
+        }
 
         res.status(201).send(data);
     } catch (err) {
