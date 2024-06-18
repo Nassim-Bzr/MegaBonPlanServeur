@@ -9,10 +9,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    datecreation: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
     content: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -25,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    categoryId: {
+    id_category: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

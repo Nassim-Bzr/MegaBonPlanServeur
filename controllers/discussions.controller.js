@@ -25,7 +25,7 @@ exports.create = async (req, res) => {
         }
         const discussion = {
             titre: req.body.titre,
-            datecreation:  new Date() ,
+
             content: req.body.content,
             likes: req.body.likes,
             id_utilisateur: req.body.id_utilisateur,
