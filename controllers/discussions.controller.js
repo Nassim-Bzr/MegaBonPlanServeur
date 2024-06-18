@@ -32,7 +32,7 @@ exports.create = async (req, res) => {
     };
 
     try {
-        const data = await Discussion.create(discussion);
+        const data = await Discussions.create(discussion);
         res.status(201).send(data);
     } catch (e) {
         console.error("Erreur lors de la création de la discussion:", e);
