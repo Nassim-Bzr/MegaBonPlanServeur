@@ -1,28 +1,42 @@
 module.exports = (sequelize, DataTypes) => {
-  const Utilisateur = sequelize.define('Utilisateur', {
-    id_utilisateur: {
+  const Discussion = sequelize.define("discussion", {
+    id_discussion: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
-    nom: DataTypes.STRING,
-    email: DataTypes.STRING,
-    motdepasse: DataTypes.STRING,
-    dateinscription: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+    titre: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    isadmin: DataTypes.BOOLEAN,
-    verificationcode: DataTypes.STRING,
-    verificationcodeexpires: DataTypes.DATE,
-    isverified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
-  }, {
-    tableName: 'utilisateur', // nom correct de la table
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    id_utilisateur: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'utilisateur', // nom correct de la table
+        key: 'id_utilisateur'
+      }
+    },
+    id_category: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'categorie', // nom correct de la table
+        key: 'id_categorie'
+      }
+    },
+  },{
+    tableName: 'discussion',
     timestamps: false
   });
 
-  return Utilisateur;
+  return Discussion;
 };
