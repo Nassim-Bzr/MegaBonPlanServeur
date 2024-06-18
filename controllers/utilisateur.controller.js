@@ -141,12 +141,14 @@ exports.findOne = async (req, res) => {
 };
 
 // Mettre à jour un utilisateur par son ID
+// utilisateur.controller.js
+
 exports.update = async (req, res) => {
     const id = req.params.id;
-    console.log(`Update request for user ID: ${id}`); // Ajout de console.log
+    console.log(`Update request for user ID: ${id}`);
   
     try {
-      const user = await Utilisateur.findByPk(id);
+      const user = await Utilisateur.findOne({ where: { id_utilisateur: id } });
       console.log(`Utilisateur trouvé : ${user}`); // Log supplémentaire
   
       if (!user) {
@@ -154,8 +156,10 @@ exports.update = async (req, res) => {
         return res.status(404).send({ message: "Utilisateur non trouvé." });
       }
   
+      console.log('Données de la requête:', req.body);
+  
       const [updatedRows] = await Utilisateur.update(req.body, {
-        where: { id: id },
+        where: { id_utilisateur: id },
       });
   
       if (updatedRows === 1) {
@@ -170,6 +174,7 @@ exports.update = async (req, res) => {
       });
     }
   };
+  
   
 
 // Supprimer un utilisateur par son ID
