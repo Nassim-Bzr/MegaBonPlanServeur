@@ -11,7 +11,9 @@ module.exports = app => {
     // Récupérer tous les discussions
     router.get("/", discussions.findAll);
   
-    // Récupérer un utilisateur par son ID
+  // get one discussions 
+
+  router.get("/:id", discussions.findOne);
    
   
     app.use('/api/discussions', router);

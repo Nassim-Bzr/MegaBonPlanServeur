@@ -46,3 +46,24 @@ exports.create = async (req, res) => {
 };
 
 
+// get one discussions 
+
+exports.findOne = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const data = await Discussions.findByPk(id);
+        if (data) {
+            res.send(data);
+        } else {
+            res.status(404).send({ message: `Discussion avec l'ID ${id} introuvable.` });
+        }
+    } catch (e) {
+        console.error("Erreur lors de la récupération de la discussion:", e);
+        res.status(500).send({
+            message: "Erreur lors de la récupération de la discussion.",
+            error: e.message,
+            stack: e.stack
+        });
+    }
+}
