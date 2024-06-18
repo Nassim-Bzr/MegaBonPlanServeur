@@ -149,26 +149,23 @@ exports.update = async (req, res) => {
   
     try {
       const user = await Utilisateur.findOne({ where: { id_utilisateur: id } });
-      console.log(`Utilisateur trouvé : ${user}`); // Log supplémentaire
+      console.log(`Utilisateur trouvéx : ${user}`); // Log supplémentaire
   
       if (!user) {
-        console.log("Utilisateur non trouvee");
-        return res.status(404).send({ message: "Utilisateur non trouvéee." });
+        console.log("Utilisateur non trouvé");
+        return res.status(404).send({ message: "Utilisateur non trouvéex." });
       }
   
       console.log('Données de la requête:', req.body);
-
-
   
       const [updatedRows] = await Utilisateur.update(req.body, {
         where: { id_utilisateur: id },
       });
-
   
       if (updatedRows === 1) {
         res.send({ message: "Utilisateur mis à jour avec succès." });
       } else {
-        res.status(404).send({ message: "Utilisateur non trouvéee." });
+        res.status(404).send({ message: "Utilisateur non trouvx." });
       }
     } catch (err) {
       console.error("Erreur lors de la mise à jour :", err);
