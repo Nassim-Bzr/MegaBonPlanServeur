@@ -131,7 +131,7 @@ exports.findOne = async (req, res) => {
         if (data) {
             res.send(data);
         } else {
-            res.status(404).send({ message: "Utilisateur non trouvé." });
+            res.status(404).send({ message: "Utilisateur non trouvée." });
         }
     } catch (err) {
         res.status(500).send({
@@ -142,7 +142,7 @@ exports.findOne = async (req, res) => {
 
 // Mettre à jour un utilisateur par son ID
 // utilisateur.controller.js
-
+// error change password
 exports.update = async (req, res) => {
     const id = req.params.id;
     console.log(`Update request for user ID: ${id}`);
@@ -152,20 +152,23 @@ exports.update = async (req, res) => {
       console.log(`Utilisateur trouvé : ${user}`); // Log supplémentaire
   
       if (!user) {
-        console.log("Utilisateur non trouvé");
-        return res.status(404).send({ message: "Utilisateur non trouvé." });
+        console.log("Utilisateur non trouvee");
+        return res.status(404).send({ message: "Utilisateur non trouvéee." });
       }
   
       console.log('Données de la requête:', req.body);
+
+
   
       const [updatedRows] = await Utilisateur.update(req.body, {
         where: { id_utilisateur: id },
       });
+
   
       if (updatedRows === 1) {
         res.send({ message: "Utilisateur mis à jour avec succès." });
       } else {
-        res.status(404).send({ message: "Utilisateur non trouvé." });
+        res.status(404).send({ message: "Utilisateur non trouvéee." });
       }
     } catch (err) {
       console.error("Erreur lors de la mise à jour :", err);
