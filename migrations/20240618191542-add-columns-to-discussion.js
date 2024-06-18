@@ -2,7 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Vérifier si la colonne id_utilisateur existe déjà
     const tableInfo = await queryInterface.describeTable('discussion');
     
     if (!tableInfo['id_utilisateur']) {

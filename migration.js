@@ -1,23 +1,25 @@
 'use strict';
-require('dotenv').config()
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    // Ajout de la colonne id_utilisateur
     await queryInterface.addColumn('discussion', 'id_utilisateur', {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
-        model: 'utilisateurs', // nom de la table utilisateur
+        model: 'utilisateur', // nom correct de la table
         key: 'id_utilisateur'
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
     });
+
+    // Ajout de la colonne id_category
     await queryInterface.addColumn('discussion', 'id_category', {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
-        model: 'categories', // nom de la table categorie
+        model: 'categorie', // nom correct de la table
         key: 'id_categorie'
       },
       onUpdate: 'CASCADE',
