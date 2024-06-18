@@ -1,5 +1,3 @@
-// discussion.model.js
-
 module.exports = (sequelize, DataTypes) => {
   const Discussion = sequelize.define("discussion", {
     id_discussion: {
@@ -9,15 +7,19 @@ module.exports = (sequelize, DataTypes) => {
     },
     titre: {
       type: DataTypes.STRING,
+      allowNull: false
     },
     datecreation: {
       type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
     content: {
-      type: DataTypes.TEXT, // Changed to TEXT to match long content type
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
     likes: {
-      type: DataTypes.INTEGER, // Corrected the type for likes
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
     authorId: {
       type: DataTypes.INTEGER,
