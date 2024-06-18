@@ -14,25 +14,21 @@ exports.findAll = async (req, res) => {
     }    
 };
 
-// Créer un nouveau code promo
+// Créer une nouvelle discussions :
+
 exports.create = async (req, res) => {
-    if (!req.body.code) {
-        res.status(400).send({ message: "Le code ne peut pas être vide !" });
-        return;
-    }
-
-    const discussion = {
-        Titre: req.body.titre,
-        Contenu: req.body.contenu,
-        dateexpiration: req.body.dateexpiration
-    };
-
     try {
-        const data = await Discussions.create(discussion);
-        res.send(data);
-    } catch (err) {
-        res.status(500).send({
-            message: err.message || "Erreur lors de la création du code promo."
+        const discussion = await Discussion.create({
+            titre: req.body.titre,
+            datecreation: req.body.datecreation,
+            content: req.body.content,
+            likes: req.body.likes,
+            authorId: req.body.authorId,
+            categoryId: req.body.categoryId
         });
+        res.status(201).send(discussion);
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ message: "Erreur lors de la création de la discussion." });
     }
 };
