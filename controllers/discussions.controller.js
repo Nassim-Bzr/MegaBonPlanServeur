@@ -33,8 +33,11 @@ exports.create = async (req, res) => {
         const data = await Discussions.create(discussion);
         res.status(201).send(data);
     } catch (e) {
-        console.error("Erreur lors de la création de la discussion:", e);
-        res.status(500).send({ message: "Erreur lors de la création de la discussion." });
+        res.status(500).send({
+            message: "Erreur lors de la création de la discussion.",
+            error: e.message,
+            stack: e.stack
+        });
     }
 };
 
