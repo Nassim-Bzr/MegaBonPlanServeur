@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    authorId: {
+    id_utilisateur: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

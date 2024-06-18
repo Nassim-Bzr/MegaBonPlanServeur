@@ -20,12 +20,12 @@ exports.create = async (req, res) => {
     try {
         console.log("Requête reçue pour créer une discussion:", req.body); // Log de débogage
 
-        const discussion = await Discussion.create({
+        const discussion = await Discussions.create({
             titre: req.body.titre,
             datecreation: req.body.datecreation,
             content: req.body.content,
             likes: req.body.likes,
-            authorId: req.body.authorId,
+            id_utilisateur: req.body.id_utilisateur,
             categoryId: req.body.categoryId
         });
 
