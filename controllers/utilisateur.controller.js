@@ -144,36 +144,25 @@ exports.findOne = async (req, res) => {
 // utilisateur.controller.js
 // error change password
 exports.update = async (req, res) => {
-    const id = req.params.id;
-    console.log(`Update request for user ID: ${id}`);
-  
+    const id = req.params.id;  // Assure-toi que le paramètre dans la route est correctement nommé
+
     try {
-      const user = await Utilisateur.findOne({ where: { id_utilisateur: id } });
-      console.log(`Utilisateur trouvéx : ${user}`); // Log supplémentaire
-  
-      if (!user) {
-        console.log("Utilisateur non trouvé");
-        return res.status(404).send({ message: "Utilisateur non trouvéex." });
-      }
-  
-      console.log('Données de la requête:', req.body);
-  
-      const [updatedRows] = await Utilisateur.update(req.body, {
-        where: { id_utilisateur: id },
-      });
-  
-      if (updatedRows === 1) {
-        res.send({ message: "Utilisateur mis à jour avec succès." });
-      } else {
-        res.status(404).send({ message: "Utilisateur non trouvx." });
-      }
+        const [updatedRows] = await Utilisateur.update(req.body, {
+            where: { id_utilisateur: id },
+        });
+
+        if (updatedRows === 1) {
+            res.send({ message: "Utilisateur mis à jour avec succès." });
+        } else {
+            res.status(404).send({ message: "Utilisateur non trouvé." });
+        }
     } catch (err) {
-      console.error("Erreur lors de la mise à jour :", err);
-      res.status(500).send({
-        message: err.message || "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
-      });
+        res.status(500).send({
+            message: err.message || "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
+        });
     }
-  };
+};
+
   
   
 
