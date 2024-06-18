@@ -9,8 +9,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 console.log('DATABASE_URL:', process.env.DATABASE_URL); // Vérifiez que l'URL est correcte
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   protocol: 'postgres',
@@ -57,4 +55,10 @@ db.bonplans.belongsTo(db.categories, { foreignKey: 'id_categorie', onDelete: 'CA
 db.categories.hasMany(db.bonplans, { foreignKey: 'id_categorie', onDelete: 'CASCADE' });
 db.codepromos.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'Utilisateur', onDelete: 'CASCADE' });
 db.utilisateurs.hasMany(db.codepromos, { foreignKey: 'id_utilisateur', as: 'CodePromos', onDelete: 'CASCADE' });
+
+db.discussions.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.discussions, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+db.discussions.belongsTo(db.categories, { foreignKey: 'id_category', onDelete: 'CASCADE' });
+db.categories.hasMany(db.discussions, { foreignKey: 'id_category', onDelete: 'CASCADE' });
+
 module.exports = db;
