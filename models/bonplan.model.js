@@ -50,6 +50,10 @@ module.exports = (sequelize, DataTypes) => {
     prix_reduit: {
       type: DataTypes.FLOAT,
       allowNull: false
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   },{
     tableName: 'bonplan',

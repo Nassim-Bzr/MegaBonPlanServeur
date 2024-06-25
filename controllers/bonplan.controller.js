@@ -1,7 +1,7 @@
 // controllers/bonplan.controller.js
 const db = require("../models");
 const BonPlan = db.bonplans; // Assurez-vous que cela correspond à la façon dont vous avez exporté et structuré votre modèle BonPlan
-
+const Like = db.likes;
 // Créer et sauvegarder un nouveau BonPlan
 // controllers/bonplan.controller.js
 
@@ -41,7 +41,41 @@ exports.create = async (req, res) => {
   }
 };
 
-// Récupérer tous les BonPlans
+exports.like = async (req, res) => {
+  const { id_bonplan, id_utilisateur } = req.body;
+
+  try {
+    // Vérifiez si l'utilisateur a déjà liké ce bon plan
+    const existingLike = await Like.findOne({
+      where: {
+        id_bonplan: id_bonplan,
+        id_utilisateur: id_utilisateur
+      }
+    });
+
+    if (existingLike) {
+      return res.status(400).send({ message: "Vous avez déjà liké ce bon plan." });
+    }
+
+    // Ajoutez un nouveau like
+    await Like.create({
+      id_bonplan: id_bonplan,
+      id_utilisateur: id_utilisateur
+    });
+
+    // Incrémentez le compteur de likes du bon plan
+    await BonPlan.increment('likes', { where: { id_bonplan: id_bonplan } });
+
+    res.send({ message: "Bon plan liké avec succès!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      message: err.message || "Une erreur est survenue lors du like du bon plan."
+    });
+  }
+};
+
+// Méthode pour récupérer tous les bon plans (avec le nombre de likes)
 exports.findAll = async (req, res) => {
   try {
     const data = await BonPlan.findAll();
@@ -52,9 +86,6 @@ exports.findAll = async (req, res) => {
     });
   }
 };
-
-
-
 
 // Récupérer tous les BonPlans
 exports.findAll = async (req, res) => {
