@@ -1,5 +1,4 @@
 // models/bonplan.model.js
-
 module.exports = (sequelize, DataTypes) => {
   const BonPlan = sequelize.define("BonPlan", {
     id_bonplan: {

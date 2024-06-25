@@ -62,4 +62,10 @@ db.utilisateurs.hasMany(db.discussions, { foreignKey: 'id_utilisateur', onDelete
 db.discussions.belongsTo(db.categories, { foreignKey: 'id_category', onDelete: 'CASCADE' });
 db.categories.hasMany(db.discussions, { foreignKey: 'id_category', onDelete: 'CASCADE' });
 
+db.likes.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+db.likes.belongsTo(db.bonplans, { foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+db.bonplans.hasMany(db.likes, { foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+
+
+
 module.exports = db;
