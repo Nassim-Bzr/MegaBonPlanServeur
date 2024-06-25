@@ -1,5 +1,7 @@
+// models/bonplan.model.js
+
 module.exports = (sequelize, DataTypes) => {
-  const BonPlan = sequelize.define("bonplan", {
+  const BonPlan = sequelize.define("BonPlan", {
     id_bonplan: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -11,13 +13,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true
     },
     lienaffiliation: {
       type: DataTypes.STRING,
+      allowNull: true
     },
     datepost: {
       type: DataTypes.DATE,
+      allowNull: false,
       defaultValue: DataTypes.NOW
     },
     id_utilisateur: {
@@ -38,9 +42,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     imglink: {
       type: DataTypes.STRING,
+      allowNull: true
     },
     approuvéparadmin: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
       defaultValue: false
     },
     prix_initial: {
@@ -55,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0
     }
-  },{
+  }, {
     tableName: 'bonplan',
     timestamps: false
   });

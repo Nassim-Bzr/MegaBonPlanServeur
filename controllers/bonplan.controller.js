@@ -9,12 +9,10 @@ const Like = db.likes;
 
 // Créer et sauvegarder un nouveau BonPlan
 // controllers/bonplan.controller.js
-
-// Créer et sauvegarder un nouveau BonPlan
 exports.create = async (req, res) => {
-  if (!req.body.titre || !req.body.prix_initial || !req.body.prix_reduit) {
+  if (!req.body.titre || !req.body.prix_initial || !req.body.prix_reduit || !req.body.id_utilisateur) {
     return res.status(400).send({
-      message: "Le titre, le prix initial et le prix réduit sont nécessaires."
+      message: "Le titre, le prix initial, le prix réduit et l'utilisateur sont nécessaires."
     });
   }
 
@@ -23,6 +21,7 @@ exports.create = async (req, res) => {
     description: req.body.description,
     lienaffiliation: req.body.lienaffiliation,
     id_categorie: req.body.id_categorie,
+    id_utilisateur: req.body.id_utilisateur, // Ajouter l'utilisateur ici
     datepost: req.body.datepost || new Date(),
     approuvéparadmin: req.body.approuvéparadmin || false,
     imglink: req.body.imglink,
