@@ -12,9 +12,9 @@ const BonPlan = db.bonplans; // Assurez-vous que cela correspond à la façon do
 
 // Créer et sauvegarder un nouveau BonPlan
 exports.create = async (req, res) => {
-  if (!req.body.titre) {
+  if (!req.body.titre || !req.body.prix_initial || !req.body.prix_reduit) {
     return res.status(400).send({
-      message: "Le titre est nécessaire."
+      message: "Le titre, le prix initial et le prix réduit sont nécessaires."
     });
   }
 
@@ -23,9 +23,11 @@ exports.create = async (req, res) => {
     description: req.body.description,
     lienaffiliation: req.body.lienaffiliation,
     id_categorie: req.body.id_categorie,
-    datePost: req.body.datePost || new Date(),
-    approuvéparadmin: req.body.approuveparadmin || false,
-    imglink: req.body.imglink // Utilisation directe de l'URL fournie
+    datepost: req.body.datepost || new Date(),
+    approuvéparadmin: req.body.approuvéparadmin || false,
+    imglink: req.body.imglink,
+    prix_initial: req.body.prix_initial,
+    prix_reduit: req.body.prix_reduit
   };
 
   try {
@@ -39,10 +41,17 @@ exports.create = async (req, res) => {
   }
 };
 
-
-
-
-
+// Récupérer tous les BonPlans
+exports.findAll = async (req, res) => {
+  try {
+    const data = await BonPlan.findAll();
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Une erreur est survenue lors de la récupération des bons plans."
+    });
+  }
+};
 
 
 

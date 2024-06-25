@@ -13,7 +13,7 @@ module.exports = app => {
   
   // get one discussions 
 
-  router.get("/:id", discussions.findOne);
+    router.get("/:id", discussions.findOne);
    
   
     app.use('/api/discussions', router);
