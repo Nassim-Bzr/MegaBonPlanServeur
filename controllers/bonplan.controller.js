@@ -89,7 +89,13 @@ exports.findAll = async (req, res) => {
 // Récupérer tous les BonPlans
 exports.findAll = async (req, res) => {
   try {
-    const data = await BonPlan.findAll();
+    const data = await BonPlan.findAll({
+      include: [{
+        model: db.commentaires,
+        as: 'commentaires',
+        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur']
+      }]
+    });
     res.send(data);
   } catch (err) {
     res.status(500).send({
