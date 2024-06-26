@@ -106,9 +106,6 @@ exports.findAll = async (req, res) => {
 
 // Trouver un BonPlan par son ID
 
-// controllers/bonplan.controller.js
-
-// Trouver un BonPlan par son ID
 exports.findOne = async (req, res) => {
   const id = req.params.id;
   try {
@@ -116,12 +113,7 @@ exports.findOne = async (req, res) => {
       include: [{
         model: db.commentaires,
         as: 'commentaires',
-        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur'],
-        include: [{
-          model: db.utilisateurs,
-          as: 'utilisateur', // Assurez-vous que l'alias correspond à celui défini dans les associations
-          attributes: ['nom']
-        }]
+        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur']
       }]
     });
     if (data) {
@@ -139,7 +131,6 @@ exports.findOne = async (req, res) => {
     });
   }
 };
-
 
 // Mettre à jour un BonPlan
 exports.update = async (req, res) => {
