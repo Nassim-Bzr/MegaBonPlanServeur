@@ -1,3 +1,5 @@
+// models/index.js
+
 const Sequelize = require('sequelize');
 const dotenv = require('dotenv');
 
@@ -44,15 +46,23 @@ db.commentaires = require("./commentaire.model.js")(sequelize, Sequelize);
 db.codepromos = require("./CodePromo.model.js")(sequelize, Sequelize);
 db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 db.likes = require("./likes.model.js")(sequelize, Sequelize);
+
 // Associations
 db.bonplans.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
 db.utilisateurs.hasMany(db.bonplans, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+
 db.bonplans.hasMany(db.favoris, { as: 'Favoris', foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
 db.favoris.belongsTo(db.bonplans, { as: 'BonPlan', foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+
 db.bonplans.hasMany(db.commentaires, { foreignKey: 'id_bonplan', as: 'commentaires', onDelete: 'CASCADE' });
 db.commentaires.belongsTo(db.bonplans, { foreignKey: 'id_bonplan', as: 'bonplan', onDelete: 'CASCADE' });
+
+db.commentaires.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.commentaires, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+
 db.bonplans.belongsTo(db.categories, { foreignKey: 'id_categorie', onDelete: 'CASCADE' });
 db.categories.hasMany(db.bonplans, { foreignKey: 'id_categorie', onDelete: 'CASCADE' });
+
 db.codepromos.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'Utilisateur', onDelete: 'CASCADE' });
 db.utilisateurs.hasMany(db.codepromos, { foreignKey: 'id_utilisateur', as: 'CodePromos', onDelete: 'CASCADE' });
 
@@ -65,7 +75,5 @@ db.categories.hasMany(db.discussions, { foreignKey: 'id_category', onDelete: 'CA
 db.likes.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
 db.likes.belongsTo(db.bonplans, { foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
 db.bonplans.hasMany(db.likes, { foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
-
-
 
 module.exports = db;
