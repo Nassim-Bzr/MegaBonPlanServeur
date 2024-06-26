@@ -23,7 +23,7 @@ const checkAuth = (req, res, next) => {
       res.status(403).send({ message: "Accès refusé" });
     }
   }; */
-  
+  router.get("/bonplan/:id_bonplan", commentary.findByBonPlanId);
   // Route pour créer un commentaire
   router.post("/", commentary.create);
   

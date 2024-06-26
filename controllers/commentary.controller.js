@@ -4,6 +4,32 @@ const { Op } = require("sequelize");
 const Commentary = db.commentaires;
 
 
+// controllers/commentaire.controller.js
+
+
+// Récupérer tous les commentaires pour un bon plan spécifique
+exports.findByBonPlanId = async (req, res) => {
+  const id_bonplan = req.params.id_bonplan;
+  try {
+    const commentaires = await Commentary.findAll({
+      where: {
+        id_bonplan: id_bonplan
+      },
+      include: [{
+        model: db.utilisateurs,
+        as: 'utilisateur',
+        attributes: ['nom']
+      }]
+    });
+    res.send(commentaires);
+  } catch (err) {
+    res.status(500).send({
+      message: `Erreur lors de la récupération des commentaires pour le bon plan ID ${id_bonplan}: ${err.message}`
+    });
+  }
+};
+
+
 //delete all 
 
 exports.deleteAll = async (req, res) => {
@@ -16,6 +42,7 @@ exports.deleteAll = async (req, res) => {
     });
   }
 };
+
 
 exports.getAllcommentary = async (req, res) => {
   try {
