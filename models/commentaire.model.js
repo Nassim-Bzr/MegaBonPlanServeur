@@ -18,14 +18,14 @@ module.exports = (sequelize, DataTypes) => {
     id_bonplan: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'BonPlans',
+        model: 'bonplan',
         key: 'id_bonplan',
       }
     },
     id_utilisateur: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Utilisateurs',
+        model: 'utilisateur',
         key: 'id_utilisateur',
       }
     }
