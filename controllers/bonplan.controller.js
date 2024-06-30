@@ -74,6 +74,30 @@ exports.like = async (req, res) => {
   }
 };
 
+
+exports.findAllByCategory = async (req, res) => {
+  const idCategorie = req.params.idCategorie;
+  try {
+    const data = await BonPlan.findAll({
+      where: {
+        id_categorie: idCategorie
+      },
+      include: [
+        {
+          model: Utilisateur,
+          as: 'utilisateur',
+          attributes: ['nom']
+        }
+      ]
+    });
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: `Erreur lors de la récupération des bons plans pour la catégorie ID ${idCategorie}: ${err.message}`
+    });
+  }
+};
+
 // Méthode pour récupérer tous les bon plans (avec le nombre de likes)
 exports.findAll = async (req, res) => {
   try {
