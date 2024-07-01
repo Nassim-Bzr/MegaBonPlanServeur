@@ -130,30 +130,37 @@ exports.findAll = async (req, res) => {
 
 // Trouver un BonPlan par son ID
 
-exports.findOne = async (req, res) => {
+exports.findOne = (req, res) => {
   const id = req.params.id;
-  try {
-    const data = await BonPlan.findByPk(id, {
-      include: [{
-        model: db.commentaires,
-        as: 'commentaires',
-        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur']
-      }]
-    });
-    if (data) {
-      console.log(data); // Ajout d'un log pour vérifier les données
-      res.send(data);
-    } else {
-      res.status(404).send({
-        message: `Aucun BonPlan trouvé avec l'ID ${id}.`
+
+  BonPlan.findByPk(id, {
+    include: [
+      {
+        model: Utilisateur,
+        as: "utilisateur",
+        attributes: ["nom"]
+      },
+      {
+        model: Categorie,
+        as: "categorie",
+        attributes: ["nomcategorie"]
+      }
+    ]
+  })
+    .then(data => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find BonPlan with id=${id}.`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving BonPlan with id=" + id
       });
-    }
-  } catch (err) {
-    console.error(err); // Ajout d'un log pour les erreurs
-    res.status(500).send({
-      message: "Erreur lors de la récupération du BonPlan avec l'ID " + id
     });
-  }
 };
 
 // Mettre à jour un BonPlan
@@ -231,8 +238,15 @@ exports.findByCategory = async (req, res) => {
   try {
     const data = await BonPlan.findAll({
       where: {
-       id_categorie : idCategorie
-      }
+        id_categorie: idCategorie
+      },
+      include: [
+        {
+          model: Utilisateur,
+          as: 'utilisateur',
+          attributes: ['nom']
+        }
+      ]
     });
     if (data.length > 0) {
       res.send(data);
