@@ -231,15 +231,8 @@ exports.findByCategory = async (req, res) => {
   try {
     const data = await BonPlan.findAll({
       where: {
-        id_categorie: idCategorie
-      },
-      include: [
-        {
-          model: Utilisateur,
-          as: 'utilisateur',
-          attributes: ['nom']
-        }
-      ]
+       id_categorie : idCategorie
+      }
     });
     if (data.length > 0) {
       res.send(data);
