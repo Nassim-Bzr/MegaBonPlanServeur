@@ -1,21 +1,17 @@
-// controllers/commentaire.controller.js
-
 const db = require('../models');
 const { Op } = require("sequelize");
 
 const Commentary = db.commentaires;
-const CommentaireLike = db.commentaireLikes;
-const Utilisateur = db.utilisateurs;
+const LikeCommentaire = db.likeCommentaires;
 
+// Récupérer tous les commentaires pour un bon plan spécifique
 exports.findByBonPlanId = async (req, res) => {
   const id_bonplan = req.params.id_bonplan;
   try {
     const commentaires = await Commentary.findAll({
-      where: {
-        id_bonplan: id_bonplan
-      },
+      where: { id_bonplan },
       include: [{
-        model: Utilisateur,
+        model: db.utilisateurs,
         as: 'utilisateur',
         attributes: ['nom']
       }]
@@ -28,6 +24,7 @@ exports.findByBonPlanId = async (req, res) => {
   }
 };
 
+// Supprimer tous les commentaires
 exports.deleteAll = async (req, res) => {
   try {
     await Commentary.destroy({ where: {} });
@@ -39,6 +36,7 @@ exports.deleteAll = async (req, res) => {
   }
 };
 
+// Récupérer tous les commentaires
 exports.getAllcommentary = async (req, res) => {
   try {
     const commentaries = await Commentary.findAll();
@@ -50,6 +48,7 @@ exports.getAllcommentary = async (req, res) => {
   }
 };
 
+// Créer un commentaire
 exports.create = async (req, res) => {
   if (!req.body.contenu || !req.body.id_bonplan) {
     return res.status(400).send({ message: "Tous les champs sont requis: contenu, id_utilisateur, id_bonplan" });
@@ -72,6 +71,7 @@ exports.create = async (req, res) => {
   }
 };
 
+// Supprimer un commentaire
 exports.delete = async (req, res) => {
   const id = req.params.id;
 
@@ -94,39 +94,41 @@ exports.delete = async (req, res) => {
   }
 };
 
-exports.likeComment = async (req, res) => {
-  const id_commentaire = req.params.id_commentaire;
-  const id_utilisateur = req.user.id; // Assurez-vous que req.user contient l'utilisateur connecté
+// Ajouter un like à un commentaire
+exports.addLike = async (req, res) => {
+  const { id_commentaire, id_utilisateur } = req.body;
 
   try {
-    // Vérifier si l'utilisateur a déjà liké ce commentaire
-    const existingLike = await CommentaireLike.findOne({
-      where: {
-        id_commentaire: id_commentaire,
-        id_utilisateur: id_utilisateur
-      }
+    const existingLike = await LikeCommentaire.findOne({
+      where: { id_commentaire, id_utilisateur }
     });
 
     if (existingLike) {
-      return res.status(400).send({ message: "Vous avez déjà liké ce commentaire." });
+      return res.status(400).send({ message: "Like déjà existant pour cet utilisateur." });
     }
 
-    // Ajouter le like
-    await CommentaireLike.create({
-      id_commentaire: id_commentaire,
-      id_utilisateur: id_utilisateur
-    });
-
-    // Mettre à jour le nombre de likes du commentaire
-    const comment = await Commentary.findByPk(id_commentaire);
-    comment.likes += 1;
-    await comment.save();
-
-    res.send({ message: "Commentaire liké avec succès." });
-  } catch (error) {
+    const newLike = await LikeCommentaire.create({ id_commentaire, id_utilisateur });
+    res.status(201).send(newLike);
+  } catch (err) {
     res.status(500).send({
-      message: `Erreur lors du like du commentaire ID ${id_commentaire}: ${error.message}`
+      message: `Erreur lors de l'ajout du like: ${err.message}`
     });
   }
 };
-git 
+
+// Récupérer les likes d'un commentaire
+exports.getLikes = async (req, res) => {
+  const id_commentaire = req.params.id_commentaire;
+
+  try {
+    const likes = await LikeCommentaire.findAll({
+      where: { id_commentaire }
+    });
+
+    res.send(likes);
+  } catch (err) {
+    res.status(500).send({
+      message: `Erreur lors de la récupération des likes: ${err.message}`
+    });
+  }
+};

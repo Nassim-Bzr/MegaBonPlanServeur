@@ -1,10 +1,9 @@
-// routes/commentaire.routes.js
-
 module.exports = app => {
   const commentary = require("../controllers/commentary.controller.js");
-  
+
   var router = require("express").Router();
 
+  // Middleware pour vérifier si l'utilisateur est connecté
   const checkAuth = (req, res, next) => {
     if (req.user) {
       next();
@@ -18,9 +17,10 @@ module.exports = app => {
   router.delete("/:id", commentary.delete);
   router.delete("/", commentary.deleteAll);
   router.get("/", commentary.getAllcommentary);
-  
-  // Route pour liker un commentaire
-  router.post("/like/:id_commentaire", checkAuth, commentary.likeComment);
+
+  // Route pour ajouter un like à un commentaire
+  router.post("/like", commentary.addLike);
+  router.get("/:id_commentaire/likes", commentary.getLikes);
 
   app.use('/api/commentary', router);
 };
