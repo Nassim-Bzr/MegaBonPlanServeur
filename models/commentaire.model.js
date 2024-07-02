@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    
     datecommentaire: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
@@ -28,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
         model: 'utilisateur',
         key: 'id_utilisateur',
       }
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     }
   });
 
