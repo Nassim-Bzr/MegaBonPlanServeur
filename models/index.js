@@ -46,7 +46,14 @@ db.commentaires = require("./commentaire.model.js")(sequelize, Sequelize);
 db.codepromos = require("./CodePromo.model.js")(sequelize, Sequelize);
 db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 db.likes = require("./likes.model.js")(sequelize, Sequelize);
+db.likeCommentaires = require("./likeCommentaire.model.js")(sequelize, Sequelize);
 
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 // Associations
 db.bonplans.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
 db.utilisateurs.hasMany(db.bonplans, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
