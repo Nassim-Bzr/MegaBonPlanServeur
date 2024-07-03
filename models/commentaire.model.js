@@ -1,7 +1,5 @@
-// models/commentaire.model.js
-
 module.exports = (sequelize, DataTypes) => {
-  const Commentaire = sequelize.define("Commentaire", {
+  const Commentaire = sequelize.define('Commentaire', {
     id_commentaire: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -11,7 +9,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    
     datecommentaire: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
@@ -19,20 +16,16 @@ module.exports = (sequelize, DataTypes) => {
     id_bonplan: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'bonplan',
+        model: 'BonPlan',
         key: 'id_bonplan',
       }
     },
     id_utilisateur: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'utilisateur',
+        model: 'Utilisateur',
         key: 'id_utilisateur',
       }
-    },
-    likes: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
     }
   });
 
@@ -44,6 +37,10 @@ module.exports = (sequelize, DataTypes) => {
     Commentaire.belongsTo(models.Utilisateur, {
       foreignKey: 'id_utilisateur',
       as: 'utilisateur',
+    });
+    Commentaire.hasMany(models.LikeCommentaire, {
+      foreignKey: 'id_commentaire',
+      as: 'likes',
     });
   };
 
