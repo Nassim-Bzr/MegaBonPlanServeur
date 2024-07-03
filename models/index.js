@@ -46,7 +46,7 @@ db.commentaires = require("./commentaire.model.js")(sequelize, Sequelize);
 db.codepromos = require("./CodePromo.model.js")(sequelize, Sequelize);
 db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
 db.likes = require("./likes.model.js")(sequelize, Sequelize);
-db.likeCommentaires = require("./likeCommentaire.model.js")(sequelize, Sequelize);
+db.LikeCommentaire = require("./likeCommentaire.model.js")(sequelize, Sequelize);
 
 
 Object.keys(db).forEach(modelName => {
@@ -82,5 +82,8 @@ db.categories.hasMany(db.discussions, { foreignKey: 'id_category', onDelete: 'CA
 db.likes.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
 db.likes.belongsTo(db.bonplans, { foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
 db.bonplans.hasMany(db.likes, { foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+
+db.LikeCommentaire.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.LikeCommentaire, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
 
 module.exports = db;

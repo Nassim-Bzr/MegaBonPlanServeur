@@ -1,3 +1,4 @@
+// models/commentaire.model.js
 module.exports = (sequelize, DataTypes) => {
   const Commentaire = sequelize.define('Commentaire', {
     id_commentaire: {

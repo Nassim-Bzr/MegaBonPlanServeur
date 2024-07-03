@@ -64,6 +64,7 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'bonplan',
     timestamps: false
   });
+
   BonPlan.associate = (models) => {
     BonPlan.hasMany(models.Commentaire, {
       foreignKey: 'id_bonplan',
