@@ -1,12 +1,24 @@
+<<<<<<< HEAD
 const Sequelize = require("sequelize");
 const dotenv = require("dotenv");
+=======
+// models/index.js
+
+const Sequelize = require('sequelize');
+const dotenv = require('dotenv');
+>>>>>>> e352006c5987d7ae78cab48be8a552a669ab9935
 
 // Charger les variables d'environnement à partir du fichier .env en développement
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
+  console.log('Chargement des variables d\'environnement en développement');
 }
 
+<<<<<<< HEAD
 const isProduction = process.env.NODE_ENV === "production";
+=======
+console.log('DATABASE_URL:', process.env.DATABASE_URL); // Vérifiez que l'URL est correcte
+>>>>>>> e352006c5987d7ae78cab48be8a552a669ab9935
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: "postgres",
@@ -14,8 +26,13 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialectOptions: {
     ssl: {
       require: true,
+<<<<<<< HEAD
       rejectUnauthorized: false,
     },
+=======
+      rejectUnauthorized: false
+    }
+>>>>>>> e352006c5987d7ae78cab48be8a552a669ab9935
   },
   pool: {
     max: 5,
@@ -26,7 +43,6 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 });
 
 const db = {};
-
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
@@ -48,8 +64,17 @@ db.bonplans = require("./bonplan.model.js")(sequelize, Sequelize);
 db.commentaires = require("./commentaire.model.js")(sequelize, Sequelize);
 db.codepromos = require("./codepromo.model.js")(sequelize, Sequelize);
 db.discussions = require("./discussion.model.js")(sequelize, Sequelize);
+db.likes = require("./likes.model.js")(sequelize, Sequelize);
+db.LikeCommentaire = require("./likeCommentaire.model.js")(sequelize, Sequelize);
 
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 // Associations
+<<<<<<< HEAD
 db.bonplans.belongsTo(db.utilisateurs, { foreignKey: "id_utilisateur" });
 db.utilisateurs.hasMany(db.bonplans, { foreignKey: "id_utilisateur" });
 db.bonplans.hasMany(db.favoris, { as: "Favoris", foreignKey: "id_bonplan" });
@@ -72,5 +97,37 @@ db.utilisateurs.hasMany(db.codepromos, {
   foreignKey: "id_utilisateur",
   as: "CodePromos",
 });
+=======
+db.bonplans.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.bonplans, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+
+db.bonplans.hasMany(db.favoris, { as: 'Favoris', foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+db.favoris.belongsTo(db.bonplans, { as: 'BonPlan', foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+
+db.bonplans.hasMany(db.commentaires, { foreignKey: 'id_bonplan', as: 'commentaires', onDelete: 'CASCADE' });
+db.commentaires.belongsTo(db.bonplans, { foreignKey: 'id_bonplan', as: 'bonplan', onDelete: 'CASCADE' });
+
+db.commentaires.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.commentaires, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+
+db.bonplans.belongsTo(db.categories, { foreignKey: 'id_categorie', onDelete: 'CASCADE' });
+db.categories.hasMany(db.bonplans, { foreignKey: 'id_categorie', onDelete: 'CASCADE' });
+
+db.codepromos.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'Utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.codepromos, { foreignKey: 'id_utilisateur', as: 'CodePromos', onDelete: 'CASCADE' });
+
+db.discussions.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.discussions, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+
+db.discussions.belongsTo(db.categories, { foreignKey: 'id_category', onDelete: 'CASCADE' });
+db.categories.hasMany(db.discussions, { foreignKey: 'id_category', onDelete: 'CASCADE' });
+
+db.likes.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+db.likes.belongsTo(db.bonplans, { foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+db.bonplans.hasMany(db.likes, { foreignKey: 'id_bonplan', onDelete: 'CASCADE' });
+
+db.LikeCommentaire.belongsTo(db.utilisateurs, { foreignKey: 'id_utilisateur', as: 'utilisateur', onDelete: 'CASCADE' });
+db.utilisateurs.hasMany(db.LikeCommentaire, { foreignKey: 'id_utilisateur', onDelete: 'CASCADE' });
+>>>>>>> e352006c5987d7ae78cab48be8a552a669ab9935
 
 module.exports = db;

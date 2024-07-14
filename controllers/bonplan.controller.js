@@ -1,7 +1,7 @@
 // controllers/bonplan.controller.js
 const db = require("../models");
 const BonPlan = db.bonplans; // Assurez-vous que cela correspond à la façon dont vous avez exporté et structuré votre modèle BonPlan
-
+const Like = db.likes;
 // Créer et sauvegarder un nouveau BonPlan
 // controllers/bonplan.controller.js
 
@@ -9,12 +9,10 @@ const BonPlan = db.bonplans; // Assurez-vous que cela correspond à la façon do
 
 // Créer et sauvegarder un nouveau BonPlan
 // controllers/bonplan.controller.js
-
-// Créer et sauvegarder un nouveau BonPlan
 exports.create = async (req, res) => {
-  if (!req.body.titre) {
+  if (!req.body.titre || !req.body.prix_initial || !req.body.prix_reduit || !req.body.id_utilisateur) {
     return res.status(400).send({
-      message: "Le titre est nécessaire."
+      message: "Le titre, le prix initial, le prix réduit et l'utilisateur sont nécessaires."
     });
   }
 
@@ -23,9 +21,12 @@ exports.create = async (req, res) => {
     description: req.body.description,
     lienaffiliation: req.body.lienaffiliation,
     id_categorie: req.body.id_categorie,
-    datePost: req.body.datePost || new Date(),
-    approuvéparadmin: req.body.approuveparadmin || false,
-    imglink: req.body.imglink // Utilisation directe de l'URL fournie
+    id_utilisateur: req.body.id_utilisateur, // Ajouter l'utilisateur ici
+    datepost: req.body.datepost || new Date(),
+    approuvéparadmin: req.body.approuvéparadmin || false,
+    imglink: req.body.imglink,
+    prix_initial: req.body.prix_initial,
+    prix_reduit: req.body.prix_reduit
   };
 
   try {
@@ -39,18 +40,86 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.like = async (req, res) => {
+  const { id_bonplan, id_utilisateur } = req.body;
+
+  try {
+    // Vérifiez si l'utilisateur a déjà liké ce bon plan
+    const existingLike = await Like.findOne({
+      where: {
+        id_bonplan: id_bonplan,
+        id_utilisateur: id_utilisateur
+      }
+    });
+
+    if (existingLike) {
+      return res.status(400).send({ message: "Vous avez déjà liké ce bon plan." });
+    }
+
+    // Ajoutez un nouveau like
+    await Like.create({
+      id_bonplan: id_bonplan,
+      id_utilisateur: id_utilisateur
+    });
+
+    // Incrémentez le compteur de likes du bon plan
+    await BonPlan.increment('likes', { where: { id_bonplan: id_bonplan } });
+
+    res.send({ message: "Bon plan liké avec succès!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      message: err.message || "Une erreur est survenue lors du like du bon plan."
+    });
+  }
+};
 
 
+exports.findAllByCategory = async (req, res) => {
+  const idCategorie = req.params.idCategorie;
+  try {
+    const data = await BonPlan.findAll({
+      where: {
+        id_categorie: idCategorie
+      },
+      include: [
+        {
+          model: Utilisateur,
+          as: 'utilisateur',
+          attributes: ['nom']
+        }
+      ]
+    });
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: `Erreur lors de la récupération des bons plans pour la catégorie ID ${idCategorie}: ${err.message}`
+    });
+  }
+};
 
-
-
-
-
+// Méthode pour récupérer tous les bon plans (avec le nombre de likes)
+exports.findAll = async (req, res) => {
+  try {
+    const data = await BonPlan.findAll();
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Une erreur est survenue lors de la récupération des bons plans."
+    });
+  }
+};
 
 // Récupérer tous les BonPlans
 exports.findAll = async (req, res) => {
   try {
-    const data = await BonPlan.findAll();
+    const data = await BonPlan.findAll({
+      include: [{
+        model: db.commentaires,
+        as: 'commentaires',
+        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur']
+      }]
+    });
     res.send(data);
   } catch (err) {
     res.status(500).send({

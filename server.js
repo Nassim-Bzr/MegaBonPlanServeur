@@ -11,20 +11,11 @@ const db = require('./models'); // Importez les modèles
 const favorisRoutes = require('./routes/favoris.routes');
 
 
-const allowedOrigins = [
-" ttps://mega-bon-plan-kh2y.vercel.app/inscription",
-"http://localhost:3000"
-];
-
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
+  origin: '*', // Permet toutes les origines
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Définir les méthodes autorisées
+  credentials: true, // Permettre l'envoi de cookies
+  optionsSuccessStatus: 204
 };
 
 app.use(session({
@@ -53,8 +44,62 @@ function isLoggedIn(req, res, next) {
 }
 
 app.get("/", (req, res) => {
-  res.send('<a href="/auth/google"> Auth with google auth</a>');
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Accueil - Mega Bon Plan</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: linear-gradient(135deg, #ece9e6, #ffffff);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+        }
+        .container {
+          text-align: center;
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          color: #333;
+        }
+        p {
+          color: #666;
+        }
+        a {
+          display: inline-block;
+          padding: 10px 20px;
+          margin-top: 20px;
+          text-decoration: none;
+          color: white;
+          background: #4285F4;
+          border-radius: 5px;
+          transition: background 0.3s;
+        }
+        a:hover {
+          background: #357AE8;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Bienvenue sur Mega Bon Plan</h1>
+        <p>Connectez-vous pour découvrir les meilleures offres et bons plans.</p>
+        <a href="/auth/google">Se connecter avec Google</a>
+      </div>
+    </body>
+    </html>
+  `);
 });
+
 
 app.get('/protected', isLoggedIn, (req, res) => {
   const baseUrl = process.env.CLIENT_URL || "http://localhost:3000";

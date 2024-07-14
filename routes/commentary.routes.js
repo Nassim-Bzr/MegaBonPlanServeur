@@ -1,35 +1,26 @@
 module.exports = app => {
-    const commentary = require ("../controllers/commentary.controller.js");
-    
-var router = require("express").Router();
+  const commentary = require("../controllers/commentary.controller.js");
 
-// Middleware pour vérifier si l'utilisateur est connecté
-const checkAuth = (req, res, next) => {
-    // Implémentez la logique pour vérifier le token ici
+  var router = require("express").Router();
+
+  // Middleware pour vérifier si l'utilisateur est connecté
+  const checkAuth = (req, res, next) => {
     if (req.user) {
       next();
     } else {
       res.status(401).send({ message: "Non autorisé" });
     }
   };
-  
-  // Middleware pour vérifier si l'utilisateur est admin
-/*   const checkAdmin = (req, res, next) => {
-    if (req.user && req.user.isAdmin) {
-      next();
-    } else {
-      res.status(403).send({ message: "Accès refusé" });
-    }
-  }; */
-  
-  // Route pour créer un commentaire
-  router.post("/", commentary.create);
-  
-  // Route pour supprimer un commentaire
-  router.delete("/:id", commentary.delete);
-  
-// Create a new Commentary
-  router.get("/", commentary.getAllcommentary)
 
-app.use('/api/commentary',router);
-}
+  router.get("/bonplan/:id_bonplan", commentary.findByBonPlanId);
+  router.post("/", commentary.create);
+  router.delete("/:id", commentary.delete);
+  router.delete("/", commentary.deleteAll);
+  router.get("/", commentary.getAllcommentary);
+
+  // Route pour ajouter un like à un commentaire
+  router.post("/like", commentary.addLike);
+  router.get("/:id_commentaire/likes", commentary.getLikes);
+
+  app.use('/api/commentary', router);
+};

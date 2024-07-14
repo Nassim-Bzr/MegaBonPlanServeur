@@ -20,6 +20,8 @@ router.delete('/:id', utilisateurs.delete);
 router.delete("/", utilisateurs.deleteAll);
 router.post('/login', utilisateurs.login);
 router.post('/verify', utilisateurs.verifyUser)
+router.put('/password/:id', utilisateurs.updatePassword); // pour mettre à jour le mot de passe
+
 
 
   // Récupérer un utilisateur par son ID

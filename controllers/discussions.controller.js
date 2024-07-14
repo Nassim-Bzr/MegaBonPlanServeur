@@ -14,25 +14,56 @@ exports.findAll = async (req, res) => {
     }    
 };
 
-// Créer un nouveau code promo
+// Créer une nouvelle discussions :
+
+
 exports.create = async (req, res) => {
-    if (!req.body.code) {
-        res.status(400).send({ message: "Le code ne peut pas être vide !" });
-        return;
+    console.log("Requête reçue pour créer une discussion:", req.body);
+
+    if (!req.body.titre || !req.body.content || !req.body.id_utilisateur || !req.body.id_category) {
+        return res.status(400).send({ message: "Tous les champs sont requis: titre, contenu, id_utilisateur, id_category" });
     }
 
     const discussion = {
-        Titre: req.body.titre,
-        Contenu: req.body.contenu,
-        dateexpiration: req.body.dateexpiration
+        titre: req.body.titre,
+        content: req.body.content,
+        likes: req.body.likes || 0,
+        id_utilisateur: req.body.id_utilisateur,
+        id_category: req.body.id_category
     };
 
     try {
         const data = await Discussions.create(discussion);
-        res.send(data);
-    } catch (err) {
+        res.status(201).send(data);
+    } catch (e) {
+        console.error("Erreur lors de la création de la discussion:", e);
         res.status(500).send({
-            message: err.message || "Erreur lors de la création du code promo."
+            message: "Erreur lors de la création de la discussion.",
+            error: e.message,
+            stack: e.stack
         });
     }
 };
+
+
+// get one discussions 
+
+exports.findOne = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const data = await Discussions.findByPk(id);
+        if (data) {
+            res.send(data);
+        } else {
+            res.status(404).send({ message: `Discussion avec l'ID ${id} introuvable.` });
+        }
+    } catch (e) {
+        console.error("Erreur lors de la récupération de la discussion:", e);
+        res.status(500).send({
+            message: "Erreur lors de la récupération de la discussion.",
+            error: e.message,
+            stack: e.stack
+        });
+    }
+}
