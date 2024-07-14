@@ -3,28 +3,49 @@ const db = require("../models");
 const BonPlan = db.bonplans; // Assurez-vous que cela correspond à la façon dont vous avez exporté et structuré votre modèle BonPlan
 
 // Créer et sauvegarder un nouveau BonPlan
+// controllers/bonplan.controller.js
+
+// Créer et sauvegarder un nouveau BonPlan// controllers/bonplan.controller.js
+
+// Créer et sauvegarder un nouveau BonPlan
+// controllers/bonplan.controller.js
+
+// Créer et sauvegarder un nouveau BonPlan
 exports.create = async (req, res) => {
-  if (!req.body.Titre) {
-    return res.status(400).send({ message: "Le contenu ne peut pas être vide !" });
+  if (!req.body.titre) {
+    return res.status(400).send({
+      message: "Le titre est nécessaire."
+    });
   }
 
   const bonPlan = {
-    Titre: req.body.Titre,
-    Description: req.body.Description,
-    LienAffiliation: req.body.LienAffiliation,
-    DatePost: req.body.DatePost || new Date(),
-    ApprouveParAdmin: req.body.ApprouveParAdmin || false,
+    titre: req.body.titre,
+    description: req.body.description,
+    lienaffiliation: req.body.lienaffiliation,
+    id_categorie: req.body.id_categorie,
+    datePost: req.body.datePost || new Date(),
+    approuvéparadmin: req.body.approuveparadmin || false,
+    imglink: req.body.imglink // Utilisation directe de l'URL fournie
   };
 
   try {
-    const data = await BonPlan.create(bonPlan);
-    res.send(data);
+    const newBonPlan = await BonPlan.create(bonPlan);
+    res.send(newBonPlan);
   } catch (err) {
+    console.error(err);
     res.status(500).send({
       message: err.message || "Une erreur est survenue lors de la création du bon plan."
     });
   }
 };
+
+
+
+
+
+
+
+
 
 // Récupérer tous les BonPlans
 exports.findAll = async (req, res) => {
@@ -39,11 +60,19 @@ exports.findAll = async (req, res) => {
 };
 
 // Trouver un BonPlan par son ID
+
 exports.findOne = async (req, res) => {
   const id = req.params.id;
   try {
-    const data = await BonPlan.findByPk(id);
+    const data = await BonPlan.findByPk(id, {
+      include: [{
+        model: db.commentaires,
+        as: 'commentaires',
+        attributes: ['id_commentaire', 'contenu', 'datecommentaire', 'id_utilisateur']
+      }]
+    });
     if (data) {
+      console.log(data); // Ajout d'un log pour vérifier les données
       res.send(data);
     } else {
       res.status(404).send({
@@ -51,6 +80,7 @@ exports.findOne = async (req, res) => {
       });
     }
   } catch (err) {
+    console.error(err); // Ajout d'un log pour les erreurs
     res.status(500).send({
       message: "Erreur lors de la récupération du BonPlan avec l'ID " + id
     });
@@ -61,7 +91,11 @@ exports.findOne = async (req, res) => {
 exports.update = async (req, res) => {
   const id = req.params.id;
   try {
-    const num = await BonPlan.update(req.body, { where: { ID_BonPlan: id } });
+    const num = await BonPlan.update(req.body, {
+      where: {
+        id_bonplan: id
+      }
+    });
     if (num == 1) {
       res.send({
         message: "Le BonPlan a été mis à jour avec succès."
@@ -82,7 +116,11 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   const id = req.params.id;
   try {
-    const num = await BonPlan.destroy({ where: { ID_BonPlan: id } });
+    const num = await BonPlan.destroy({
+      where: {
+        ID_BonPlan: id
+      }
+    });
     if (num == 1) {
       res.send({
         message: "Le BonPlan a été supprimé avec succès!"
@@ -108,10 +146,78 @@ exports.deleteAll = async (req, res) => {
       where: {},
       truncate: false
     });
-    res.send({ message: `${data} bon plans ont été supprimés avec succès !` });
+    res.send({
+      message: `${data} bon plans ont été supprimés avec succès !`
+    });
   } catch (err) {
     res.status(500).send({
       message: err.message || "Une erreur est survenue lors de la suppression des bon plans."
     });
   }
 }
+
+// Récupérer tous les BonPlans pour une catégorie spécifique
+exports.findByCategory = async (req, res) => {
+  const idCategorie = req.params.idCategorie;
+  try {
+    const data = await BonPlan.findAll({
+      where: {
+       id_categorie : idCategorie
+      }
+    });
+    if (data.length > 0) {
+      res.send(data);
+    } else {
+      res.status(404).send({
+        message: `Aucun bon plan trouvé pour la catégorie ID ${idCategorie}.`
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: `Erreur lors de la récupération des bons plans pour la catégorie ID ${idCategorie}: ${err.message}`
+    });
+  }
+};
+
+// Récupérer tous les BonPlans non approuvés
+// controllers/bonplan.controller.js
+exports.findPending = async (req, res) => {
+  try {
+    const pendingBonPlans = await BonPlan.findAll({
+      where: {
+        approuvéparadmin: false
+      }
+    });
+    res.send(pendingBonPlans);
+  } catch (err) {
+    res.status(500).send({
+      message: "Une erreur est survenue lors de la récupération des bons plans en attente: " + err.message
+    });
+  }
+};
+
+// Basculer l'approbation d'un bon plan
+exports.toggleApproval = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const bonPlan = await BonPlan.findByPk(id);
+    if (!bonPlan) {
+      return res.status(404).send({
+        message: `BonPlan avec l'ID ${id} non trouvé.`
+      });
+    }
+
+    const updated = await bonPlan.update({
+      approuvéparadmin: !bonPlan.approuvéparadmin
+    });
+
+    res.send({
+      message: "L'état d'approbation du bon plan a été modifié.",
+      bonPlan: updated
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: `Erreur lors de la modification de l'état d'approbation du bon plan avec l'ID ${id}: ${err.message}`
+    });
+  }
+};

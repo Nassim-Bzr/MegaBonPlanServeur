@@ -10,9 +10,15 @@ module.exports = (sequelize, DataTypes) => {
     motdepasse: DataTypes.STRING,
     dateinscription: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW // Définit la date et l'heure actuelles comme valeur par défaut
+      defaultValue: DataTypes.NOW
     },
-    isadmin: DataTypes.BOOLEAN
+    isadmin: DataTypes.BOOLEAN,
+    verificationcode: DataTypes.STRING,
+    verificationcodeexpires: DataTypes.DATE,
+    isverified: { // Nouveau champ
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     tableName: 'utilisateur',
     timestamps: false

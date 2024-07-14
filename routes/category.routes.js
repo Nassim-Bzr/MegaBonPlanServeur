@@ -14,7 +14,8 @@ module.exports = app => {
   
     // Récupérer une catégorie par son ID
 
-  
+    router.get("/:id", categories.findOne);
+
     // Mettre à jour une catégorie par son ID
     router.put("/:id", categories.update); // Appliquez authenticateUser si nécessaire
   

@@ -1,33 +1,34 @@
-// routes/bonplan.routes.js
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const bonplans = require("../controllers/bonplan.controller");
+
+
+
+// Créer une nouvelle catégorie
+router.post("/", bonplans.create); // Le 'imglink' doit correspondre au 'name' de votre input de type file */
+
+router.get("/pending", bonplans.findPending);
+
+// Récupérer toutes les catégories
+router.get("/", bonplans.findAll);
+
+router.get("/:id", bonplans.findOne);
+
+// Mettre à jour une catégorie par son ID
+router.put("/:id", bonplans.update);
+
+// Supprimer une catégorie par son ID
+router.delete("/:id", bonplans.delete);
+
+// Supprimer tout les bonplans
+router.delete("/", bonplans.deleteAll);
+
+// Récupérer tous les bons plans pour une catégorie spécifique
+router.get("/category/:idCategorie", bonplans.findByCategory);
+
+// Ajouter d'autres routes au besoin
 
 module.exports = app => {
-    const bonplans = require("../controllers/bonplan.controller");
-
-  
-    var router = require("express").Router();
-  
-    // Créer une nouvelle catégorie
-    router.post("/", bonplans.create); // Appliquez authenticateUser si nécessaire
-  
-    // Récupérer toutes les catégories
-    router.get("/", bonplans.findAll);
-  
-
-    router.get("/:id", bonplans.findOne);
-  
-    // Mettre à jour une catégorie par son ID
-    router.put("/:id", bonplans.update); // Appliquez authenticateUser si nécessaire
-  
-    // Supprimer une catégorie par son ID
-    router.delete("/:id", bonplans.delete); // Appliquez authenticateUser si nécessaire
-
-    // Supprimer tout les bonplans
-
-    router.delete("/", bonplans.deleteAll);
-  
-    // Supprimer toutes les catégories
-    
-  
     app.use('/api/bonplans', router);
-  };
-  
+};

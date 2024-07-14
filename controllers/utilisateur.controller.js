@@ -1,36 +1,100 @@
 const db = require("../models");
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+const { Op } = require('sequelize');
+
 const Utilisateur = db.utilisateurs;
 
-// Créer un utilisateur
-exports.create = async (req, res) => {
-    try {
-        // Valider la requête
-        if (!req.body.nom) {
-            return res
-                .status(400)
-                .send({ message: "Le contenu ne peut pas être vide !" });
-        }
-
-        // Créer un nouvel utilisateur
-        const utilisateur = {
-            nom: req.body.nom,
-            prenom: req.body.prenom,
-            email: req.body.email,
-            motdepasse: req.body.motdepasse,
-            isadmin: req.body.isadmin,
-        };
-
-        // Sauvegarder l'utilisateur dans la base de données
-        const data = await Utilisateur.create(utilisateur);
-        res.send(data);
-    } catch (err) {
-        res.status(500).send({
-            message:
-                err.message ||
-                "Une erreur est survenue lors de la création de l'utilisateur.",
-        });
-    }
+// Fonction pour générer un code de vérification
+const generateVerificationCode = () => {
+  return crypto.randomBytes(3).toString('hex');
 };
+
+// Configurer le transporter pour Nodemailer avec SMTP
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_APP_PASSWORD
+  }
+});
+
+// Fonction pour envoyer l'email de vérification
+const sendVerificationEmail = (email, code) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USERNAME,
+    to: email,
+    subject: 'Votre code de vérification',
+    text: `Votre code de vérification est ${code}`
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Erreur lors de l\'envoi de l\'email: ', error);
+    } else {
+      console.log('Email envoyé: ' + info.response);
+    }
+  });
+};
+
+// Créer un utilisateur avec isVerified à false
+exports.create = async (req, res) => {
+  try {
+    const code = generateVerificationCode();
+    const utilisateur = {
+      nom: req.body.nom,
+      email: req.body.email,
+      motdepasse: await bcrypt.hash(req.body.motdepasse, 10),
+      isadmin: req.body.isadmin || false,
+      verificationcode: code,
+      verificationcodeexpires: new Date(Date.now() + 3600000),
+      isverified: false
+    };
+    const data = await Utilisateur.create(utilisateur);
+    sendVerificationEmail(req.body.email, code);
+    res.status(201).send(data);
+  } catch (err) {
+    console.error("Error during user creation:", err);
+    res.status(500).send({ message: err.message });
+  }
+};
+
+// Méthode pour vérifier le code de l'utilisateur
+
+exports.verifyUser = async (req, res) => {
+    const { email, code } = req.body;
+    try {
+      const utilisateur = await Utilisateur.findOne({
+        where: {
+          email,
+          verificationcodeexpires: {
+            [Op.gt]: new Date() // Comparer les dates
+          }
+        }
+      });
+      if (!utilisateur) {
+        return res.status(404).send({ message: "Utilisateur non trouvé ou code expiré." });
+      }
+  
+      if (utilisateur.verificationcode === code) {
+        utilisateur.isverified = true;
+        await utilisateur.save();
+        res.send({ message: "Compte vérifié avec succès !" });
+      } else {
+        res.status(400).send({ message: "Code de vérification incorrect." });
+      }
+    } catch (err) {
+      console.error("Verification error:", err);
+      res.status(500).send({ message: err.message });
+    }
+  };
+  
+
+
 
 // Récupérer tous les utilisateurs
 exports.findAll = async (req, res) => {
@@ -68,11 +132,11 @@ exports.findOne = async (req, res) => {
 
 // Mettre à jour un utilisateur par son ID
 exports.update = async (req, res) => {
-    const id = req.params.id;
+    const id = req.params.id;  // Assure-toi que le paramètre dans la route est correctement nommé
 
     try {
         const [updatedRows] = await Utilisateur.update(req.body, {
-            where: { id: id },
+            where: { id_utilisateur: id },
         });
 
         if (updatedRows === 1) {
@@ -82,12 +146,12 @@ exports.update = async (req, res) => {
         }
     } catch (err) {
         res.status(500).send({
-            message:
-                err.message ||
-                "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
+            message: err.message || "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
         });
     }
 };
+
+
 
 // Supprimer un utilisateur par son ID
 exports.delete = async (req, res) => {
@@ -132,3 +196,53 @@ exports.deleteAll = async (req, res) => {
         });
     }
 }
+// Connexion d'un utilisateur
+const jwt = require('jsonwebtoken');
+
+exports.login = async (req, res) => {
+    const { email, motdepasse } = req.body;
+  
+    try {
+      const utilisateur = await Utilisateur.findOne({ where: { email } });
+  
+      if (!utilisateur) {
+        return res.status(404).send({ message: "Utilisateur non trouvé." });
+      }
+  
+      if (!utilisateur.isverified) {
+        return res.status(401).send({ message: "Compte non vérifié. Veuillez vérifier votre compte.", verify: true });
+      }
+  
+      const isMatch = await bcrypt.compare(motdepasse, utilisateur.motdepasse);
+      if (!isMatch) {
+        return res.status(401).send({ message: "Mot de passe incorrect !" });
+      }
+  
+      const payload = {
+        user: {
+          id: utilisateur.id,
+          email: utilisateur.email,
+          isadmin: utilisateur.isadmin,
+          nom: utilisateur.nom,
+          token: utilisateur,
+        }
+      };
+  
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: 3600 },
+        (err, token) => {
+          if (err) throw err;
+          res.json({
+            user: payload.user,
+            token: token
+          });
+        }
+      );
+    } catch (err) {
+      res.status(500).send({ message: err.message || "Une erreur est survenue lors de la tentative de connexion." });
+    }
+  };
+  
+

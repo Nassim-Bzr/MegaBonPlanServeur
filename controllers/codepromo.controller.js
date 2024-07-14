@@ -25,7 +25,11 @@ exports.create = async (req, res) => {
         code: req.body.code,
         description: req.body.description,
         dateexpiration: req.body.dateexpiration,
-        approuvéparadmin: req.body.approuvéparadmin
+        approuvéparadmin: req.body.approuvéparadmin,
+        marchand: req.body.marchand,
+        imgmarchand: req.body.imgmarchand,
+        reduction: req.body.reduction,
+        montant: req.body.montant,
     };
 
     try {
