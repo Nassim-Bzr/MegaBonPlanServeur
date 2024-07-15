@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     titre: {
       type: DataTypes.STRING,
-<<<<<<< HEAD
+
       allowNull: false, // Added allowNull constraint
     },
     datecreation: {
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     likes: {
       type: DataTypes.INTEGER,
       allowNull: false, // Added allowNull constraint
-=======
+
       allowNull: false
     },
     content: {
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     likes: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
->>>>>>> e352006c5987d7ae78cab48be8a552a669ab9935
+
     },
     id_utilisateur: {
       type: DataTypes.INTEGER,
