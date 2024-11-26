@@ -12,10 +12,11 @@ const favorisRoutes = require('./routes/favoris.routes');
 
 
 const corsOptions = {
-  origin: '*', // Permet toutes les origines
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Définir les méthodes autorisées
-  credentials: true, // Permettre l'envoi de cookies
-  optionsSuccessStatus: 204
+  origin: ['http://localhost:3000', 'https://votre-frontend-url.com'], // Ajoutez vos domaines autorisés
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'Authorization'], // Ajoutez les headers nécessaires
 };
 
 app.use(session({
@@ -29,6 +30,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
 app.use(cors(corsOptions));
+
+app.use('/uploads', express.static('uploads'));
+
 
 // Importez vos routeurs
 require("./routes/category.routes")(app);
@@ -130,4 +134,3 @@ db.sequelize.sync().then(() => {
 });
 
 // Servir les fichiers statiques du dossier uploads
-app.use('/uploads', express.static('uploads'));
