@@ -1,10 +1,11 @@
 module.exports = app => {
     const bonplans = require("../controllers/bonplan.controller.js");
+    const upload = require('../middleware/upload');
   
     var router = require("express").Router();
   
     // Créer un nouveau bon plan
-    router.post("/", bonplans.create);
+    router.post("/", upload.single('image'), bonplans.create);
   
     // Récupérer tous les bon plans
     router.get("/", bonplans.findAll);

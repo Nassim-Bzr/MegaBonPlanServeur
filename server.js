@@ -128,3 +128,6 @@ db.sequelize.sync().then(() => {
 }).catch(err => {
   console.error('Unable to connect to the database:', err);
 });
+
+// Servir les fichiers statiques du dossier uploads
+app.use('/uploads', express.static('uploads'));

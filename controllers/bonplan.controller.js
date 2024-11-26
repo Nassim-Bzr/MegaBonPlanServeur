@@ -28,18 +28,28 @@ async function sendNotificationEmail(email, categoryName, bonPlanTitle) {
 
 exports.create = async (req, res) => {
   try {
-    const userId = req.user.id; // Supposons que l'ID de l'utilisateur est disponible dans req.user après authentification
-    const bonPlanData = {
+    const bonplanData = {
       ...req.body,
       img_upload: req.file ? `/uploads/${req.file.filename}` : null,
-      id_utilisateur: userId
+      id_utilisateur: req.userId
     };
 
-    const newBonPlan = await db.BonPlan.create(bonPlanData);
+    console.log('Données reçues:', bonplanData);
 
-    res.status(201).send(newBonPlan);
+    const bonplan = await BonPlan.create(bonplanData);
+    
+    res.status(201).json({
+      success: true,
+      data: bonplan,
+      message: "Bon plan créé avec succès"
+    });
   } catch (error) {
-    res.status(500).send({ message: "Erreur lors de la création de l'annonce.", error: error.message });
+    console.error('Erreur création bon plan:', error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la création du bon plan",
+      error: error.message
+    });
   }
 };
 
