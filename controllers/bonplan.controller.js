@@ -1,50 +1,55 @@
-// controllers/bonplan.controller.js
+const nodemailer = require('nodemailer');
 const db = require("../models");
-const BonPlan = db.bonplans; // Assurez-vous que cela correspond à la façon dont vous avez exporté et structuré votre modèle BonPlan
+const BonPlan = db.bonplans; 
 const Like = db.likes;
-// Créer et sauvegarder un nouveau BonPlan
-// controllers/bonplan.controller.js
+const Subscription = db.subscription; 
+const Utilisateur = db.utilisateurs;
 
-// Créer et sauvegarder un nouveau BonPlan// controllers/bonplan.controller.js
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
-// Créer et sauvegarder un nouveau BonPlan
-// controllers/bonplan.controller.js
+// Fonction pour envoyer des emails de notification
+async function sendNotificationEmail(email, categoryName, bonPlanTitle) {
+  let info = await transporter.sendMail({
+    from: '"MegaBonPlan" <megabonplan@example.com>',
+    to: email,
+    subject: `Nouveau bon plan dans la catégorie ${categoryName}`,
+    text: `Un nouveau bon plan intitulé "${bonPlanTitle}" a été publié dans la catégorie ${categoryName}.`,
+    html: `<p>Un nouveau bon plan intitulé "<strong>${bonPlanTitle}</strong>" a été publié dans la catégorie ${categoryName}.</p>`,
+  });
+
+  console.log('Message sent: %s', info.messageId);
+}
+
 exports.create = async (req, res) => {
-  if (!req.body.titre || !req.body.prix_initial || !req.body.prix_reduit || !req.body.id_utilisateur) {
-    return res.status(400).send({
-      message: "Le titre, le prix initial, le prix réduit et l'utilisateur sont nécessaires."
-    });
-  }
-
-  const bonPlan = {
-    titre: req.body.titre,
-    description: req.body.description,
-    lienaffiliation: req.body.lienaffiliation,
-    id_categorie: req.body.id_categorie,
-    id_utilisateur: req.body.id_utilisateur, // Ajouter l'utilisateur ici
-    datepost: req.body.datepost || new Date(),
-    approuvéparadmin: req.body.approuvéparadmin || false,
-    imglink: req.body.imglink,
-    prix_initial: req.body.prix_initial,
-    prix_reduit: req.body.prix_reduit
-  };
-
   try {
-    const newBonPlan = await BonPlan.create(bonPlan);
-    res.send(newBonPlan);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({
-      message: err.message || "Une erreur est survenue lors de la création du bon plan."
-    });
+    const userId = req.user.id; // Supposons que l'ID de l'utilisateur est disponible dans req.user après authentification
+    const bonPlanData = {
+      ...req.body,
+      img_upload: req.file ? `/uploads/${req.file.filename}` : null,
+      id_utilisateur: userId
+    };
+
+    const newBonPlan = await db.BonPlan.create(bonPlanData);
+
+    res.status(201).send(newBonPlan);
+  } catch (error) {
+    res.status(500).send({ message: "Erreur lors de la création de l'annonce.", error: error.message });
   }
 };
 
+// Ajoutez vos autres méthodes de contrôleur ici...
+
+// Exemples de méthodes existantes que vous avez fournies :
 exports.like = async (req, res) => {
   const { id_bonplan, id_utilisateur } = req.body;
 
   try {
-    // Vérifiez si l'utilisateur a déjà liké ce bon plan
     const existingLike = await Like.findOne({
       where: {
         id_bonplan: id_bonplan,
@@ -56,13 +61,11 @@ exports.like = async (req, res) => {
       return res.status(400).send({ message: "Vous avez déjà liké ce bon plan." });
     }
 
-    // Ajoutez un nouveau like
     await Like.create({
       id_bonplan: id_bonplan,
       id_utilisateur: id_utilisateur
     });
 
-    // Incrémentez le compteur de likes du bon plan
     await BonPlan.increment('likes', { where: { id_bonplan: id_bonplan } });
 
     res.send({ message: "Bon plan liké avec succès!" });
@@ -73,7 +76,6 @@ exports.like = async (req, res) => {
     });
   }
 };
-
 
 exports.findAllByCategory = async (req, res) => {
   const idCategorie = req.params.idCategorie;
@@ -98,19 +100,6 @@ exports.findAllByCategory = async (req, res) => {
   }
 };
 
-// Méthode pour récupérer tous les bon plans (avec le nombre de likes)
-exports.findAll = async (req, res) => {
-  try {
-    const data = await BonPlan.findAll();
-    res.send(data);
-  } catch (err) {
-    res.status(500).send({
-      message: err.message || "Une erreur est survenue lors de la récupération des bons plans."
-    });
-  }
-};
-
-// Récupérer tous les BonPlans
 exports.findAll = async (req, res) => {
   try {
     const data = await BonPlan.findAll({
@@ -127,8 +116,6 @@ exports.findAll = async (req, res) => {
     });
   }
 };
-
-// Trouver un BonPlan par son ID
 
 exports.findOne = async (req, res) => {
   const id = req.params.id;
@@ -156,7 +143,6 @@ exports.findOne = async (req, res) => {
   }
 };
 
-// Mettre à jour un BonPlan
 exports.update = async (req, res) => {
   const id = req.params.id;
   try {
@@ -167,7 +153,7 @@ exports.update = async (req, res) => {
     });
     if (num == 1) {
       res.send({
-        message: "Le BonPlan a été mis à jour avec succès."
+        message: "Le BonPlanx a été miseeee à jour avec succès."
       });
     } else {
       res.send({
@@ -181,7 +167,6 @@ exports.update = async (req, res) => {
   }
 };
 
-// Supprimer un BonPlan
 exports.delete = async (req, res) => {
   const id = req.params.id;
   try {
@@ -206,9 +191,6 @@ exports.delete = async (req, res) => {
   }
 };
 
-
-// Supprimer tout les bon plans
-
 exports.deleteAll = async (req, res) => {
   try {
     const data = await BonPlan.destroy({
@@ -223,9 +205,8 @@ exports.deleteAll = async (req, res) => {
       message: err.message || "Une erreur est survenue lors de la suppression des bon plans."
     });
   }
-}
+};
 
-// Récupérer tous les BonPlans pour une catégorie spécifique
 exports.findByCategory = async (req, res) => {
   const idCategorie = req.params.idCategorie;
   try {
@@ -248,8 +229,6 @@ exports.findByCategory = async (req, res) => {
   }
 };
 
-// Récupérer tous les BonPlans non approuvés
-// controllers/bonplan.controller.js
 exports.findPending = async (req, res) => {
   try {
     const pendingBonPlans = await BonPlan.findAll({
@@ -265,7 +244,6 @@ exports.findPending = async (req, res) => {
   }
 };
 
-// Basculer l'approbation d'un bon plan
 exports.toggleApproval = async (req, res) => {
   const id = req.params.id;
   try {

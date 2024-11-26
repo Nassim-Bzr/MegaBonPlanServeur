@@ -1,7 +1,7 @@
 // controllers/codePromo.controller.js
 
 const db = require("../models");
-const CodePromo = db.codepromos;
+const CodePromo = db.CodePromo;
 
 // Récupérer tous les codes promos
 exports.findAll = async (req, res) => {
