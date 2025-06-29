@@ -19,6 +19,17 @@ module.exports = (sequelize, DataTypes) => {
       freezeTableName: true, // Empêche Sequelize de pluraliser le nom de la table
       timestamps: false // Désactive les colonnes de timestamp si elles ne sont pas utilisées
     });
+
+    Favoris.associate = (models) => {
+      Favoris.belongsTo(models.utilisateurs, {
+        foreignKey: 'id_utilisateur',
+        as: 'utilisateur'
+      });
+      Favoris.belongsTo(models.bonplans, {
+        foreignKey: 'id_bonplan',
+        as: 'bonplan'
+      });
+    };
   
     return Favoris;
   };

@@ -27,11 +27,11 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   LikeCommentaire.associate = (models) => {
-    LikeCommentaire.belongsTo(models.Commentaire, {
+    LikeCommentaire.belongsTo(models.commentaires, {
       foreignKey: 'id_commentaire',
       as: 'commentaire',
     });
-    LikeCommentaire.belongsTo(models.Utilisateur, {
+    LikeCommentaire.belongsTo(models.utilisateurs, {
       foreignKey: 'id_utilisateur',
       as: 'utilisateur',
     });

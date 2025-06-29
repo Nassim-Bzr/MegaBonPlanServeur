@@ -22,5 +22,16 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true
   });
 
+  Categorie.associate = (models) => {
+    Categorie.hasMany(models.bonplans, {
+      foreignKey: 'id_categorie',
+      as: 'bonplans'
+    });
+    Categorie.hasMany(models.discussions, {
+      foreignKey: 'id_category',
+      as: 'discussions'
+    });
+  };
+
   return Categorie;
 };

@@ -23,5 +23,5 @@ module.exports = app => {
     // Supprimer tous les CodePromos
     router.delete("/", codePromos.deleteAll);
   
-    app.use('/api/codePromos', router);
+    app.use('/api/codepromos', router);
 };

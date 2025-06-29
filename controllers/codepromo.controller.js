@@ -1,21 +1,25 @@
 // controllers/codePromo.controller.js
 
 const db = require("../models");
-const CodePromo = db.CodePromo;
+const CodePromo = db.codepromos;
 
 // Récupérer tous les codes promos
 exports.findAll = async (req, res) => {
     try {
+        console.log("Tentative de récupération des codes promos...");
         const codepromos = await CodePromo.findAll(); 
+        console.log("Codes promos récupérés:", codepromos.length);
         res.send(codepromos);
     } catch (e) {
-        console.log(e);
-        res.status(500).send({ message: "Erreur lors de la récupération des codes promos." });
+        console.log("Erreur lors de la récupération des codes promos:", e);
+        res.status(500).send({ message: "Erreur lors de la récupération des codes promos: " + e.message });
     }    
 };
 
 // Créer un nouveau code promo
 exports.create = async (req, res) => {
+    console.log("Données reçues pour création:", req.body);
+    
     if (!req.body.code) {
         res.status(400).send({ message: "Le code ne peut pas être vide !" });
         return;
@@ -25,17 +29,20 @@ exports.create = async (req, res) => {
         code: req.body.code,
         description: req.body.description,
         dateexpiration: req.body.dateexpiration,
-        approuvéparadmin: req.body.approuvéparadmin,
         marchand: req.body.marchand,
         imgmarchand: req.body.imgmarchand,
         reduction: req.body.reduction,
         montant: req.body.montant,
+        id_utilisateur: req.body.id_utilisateur || null,
+        approuveparadmin: req.body.approuveparadmin || false,
     };
 
     try {
         const data = await CodePromo.create(codePromo);
+        console.log("Code promo créé avec succès:", data);
         res.send(data);
     } catch (err) {
+        console.error("Erreur lors de la création du code promo:", err);
         res.status(500).send({
             message: err.message || "Erreur lors de la création du code promo."
         });

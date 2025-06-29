@@ -27,5 +27,16 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true
   });
 
+  Like.associate = (models) => {
+    Like.belongsTo(models.utilisateurs, {
+      foreignKey: 'id_utilisateur',
+      as: 'utilisateur'
+    });
+    Like.belongsTo(models.bonplans, {
+      foreignKey: 'id_bonplan',
+      as: 'bonplan'
+    });
+  };
+
   return Like;
 };

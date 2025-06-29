@@ -7,11 +7,14 @@ module.exports = app => {
     // Créer un nouveau bon plan
     router.post("/", upload.single('image'), bonplans.create);
   
-    // Récupérer tous les bon plans
-    router.get("/", bonplans.findAll);
-  
-    // Récupérer tous les bon plans pour une catégorie spécifique
-    router.get("/category/:idCategorie", bonplans.findByCategory);
+      // Récupérer tous les bon plans
+  router.get("/", bonplans.findAll);
+
+  // Récupérer les deals les plus chauds (tri par température)
+  router.get("/hot", bonplans.findHotDeals);
+
+  // Récupérer tous les bon plans pour une catégorie spécifique
+  router.get("/category/:idCategorie", bonplans.findByCategory);
   
     // Récupérer les bon plans non approuvés
     router.get("/pending", bonplans.findPending);

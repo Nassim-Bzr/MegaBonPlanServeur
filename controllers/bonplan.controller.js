@@ -2,8 +2,9 @@ const nodemailer = require('nodemailer');
 const db = require("../models");
 const BonPlan = db.bonplans; 
 const Like = db.likes;
-const Subscription = db.subscription; 
+const Subscription = db.subscriptions; 
 const Utilisateur = db.utilisateurs;
+const subscriptionController = require('./subscription.controller');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -28,20 +29,35 @@ async function sendNotificationEmail(email, categoryName, bonPlanTitle) {
 
 exports.create = async (req, res) => {
   try {
+    const userId = req.userId || req.body.id_utilisateur;
+    
+    // TEMPORAIREMENT DÉSACTIVÉ - système d'abonnement
+    // const canPost = await subscriptionController.canUserPost(userId);
+    // if (!canPost) {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: "Limite de posts atteinte pour ce mois. Upgradez votre abonnement pour poster plus !",
+    //     upgrade_needed: true
+    //   });
+    // }
+
     const bonplanData = {
       ...req.body,
       img_upload: req.file ? `/uploads/${req.file.filename}` : null,
-      id_utilisateur: req.userId
+      id_utilisateur: userId
     };
 
     console.log('Données reçues:', bonplanData);
 
     const bonplan = await BonPlan.create(bonplanData);
     
+    // TEMPORAIREMENT DÉSACTIVÉ - décompte des posts
+    // await subscriptionController.useUserPost(userId);
+    
     res.status(201).json({
       success: true,
       data: bonplan,
-      message: "Bon plan créé avec succès"
+      message: "Bon plan créé avec succès (mode illimité temporaire)"
     });
   } catch (error) {
     console.error('Erreur création bon plan:', error);
@@ -53,7 +69,92 @@ exports.create = async (req, res) => {
   }
 };
 
-// Ajoutez vos autres méthodes de contrôleur ici...
+// Récupérer les bons plans triés par température (popularité)
+exports.findHotDeals = async (req, res) => {
+  try {
+    const bonplans = await BonPlan.findAll({
+      where: {
+        approuvéparadmin: true
+      },
+      order: [
+        ['temperature_score', 'DESC'], // Tri par score de température
+        ['likes', 'DESC'],             // Puis par likes
+        ['datepost', 'DESC']           // Puis par date
+      ],
+      limit: 20 // Top 20 des deals chauds
+    });
+
+    // Calculer la température pour chaque bon plan
+    const bonplansWithTemp = bonplans.map(bp => ({
+      ...bp.dataValues,
+      temperature: bp.calculateTemperature(),
+      temperature_score: bp.calculateTemperatureScore()
+    }));
+
+    res.json({
+      success: true,
+      data: bonplansWithTemp
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la récupération des deals chauds",
+      error: error.message
+    });
+  }
+};
+
+// Récupérer tous les bons plans avec tri par température
+exports.findAll = async (req, res) => {
+  try {
+    const { sortBy = 'hot', limit = 50, offset = 0 } = req.query;
+    
+    let orderClause;
+    switch(sortBy) {
+      case 'hot':
+        orderClause = [
+          ['temperature_score', 'DESC'],
+          ['likes', 'DESC']
+        ];
+        break;
+      case 'new':
+        orderClause = [['datepost', 'DESC']];
+        break;
+      case 'price':
+        orderClause = [['prix_reduit', 'ASC']];
+        break;
+      default:
+        orderClause = [
+          ['temperature_score', 'DESC'],
+          ['datepost', 'DESC']
+        ];
+    }
+
+    const bonplans = await BonPlan.findAll({
+      where: {
+        approuvéparadmin: true
+      },
+      order: orderClause,
+      limit: parseInt(limit),
+      offset: parseInt(offset)
+    });
+
+    // Ajouter la température calculée
+    const bonplansWithTemp = bonplans.map(bp => ({
+      ...bp.dataValues,
+      temperature: bp.calculateTemperature(),
+      temperature_score: bp.calculateTemperatureScore()
+    }));
+
+    res.json(bonplansWithTemp);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la récupération des bons plans",
+      error: error.message
+    });
+  }
+};
 
 // Exemples de méthodes existantes que vous avez fournies :
 exports.like = async (req, res) => {

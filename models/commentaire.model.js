@@ -28,14 +28,17 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id_utilisateur',
       }
     }
+  }, {
+    tableName: 'commentaire',
+    timestamps: false
   });
 
   Commentaire.associate = (models) => {
-    Commentaire.belongsTo(models.BonPlan, {
+    Commentaire.belongsTo(models.bonplans, {
       foreignKey: 'id_bonplan',
       as: 'bonplan',
     });
-    Commentaire.belongsTo(models.Utilisateur, {
+    Commentaire.belongsTo(models.utilisateurs, {
       foreignKey: 'id_utilisateur',
       as: 'utilisateur',
     });

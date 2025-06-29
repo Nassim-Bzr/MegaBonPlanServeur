@@ -124,13 +124,18 @@ app.get('/google/callback',
 
 const PORT = process.env.PORT || 8080;
 
-// Synchronisez la base de données et démarrez le serveur
-db.sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
-  });
-}).catch(err => {
-  console.error('Unable to connect to the database:', err);
+// Démarrer le serveur directement sans synchronisation (les tables existent déjà)
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
 });
+
+// Optionnel: Tester la connexion sans synchronisation
+db.sequelize.authenticate()
+  .then(() => {
+    console.log('Database connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
 // Servir les fichiers statiques du dossier uploads

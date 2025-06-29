@@ -38,5 +38,16 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false
   });
 
+  Discussion.associate = (models) => {
+    Discussion.belongsTo(models.utilisateurs, {
+      foreignKey: 'id_utilisateur',
+      as: 'utilisateur'
+    });
+    Discussion.belongsTo(models.categories, {
+      foreignKey: 'id_category',
+      as: 'categorie'
+    });
+  };
+
   return Discussion;
 };
